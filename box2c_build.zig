@@ -8,6 +8,57 @@ pub fn build(
     target: std.zig.CrossTarget,
     optimize: std.builtin.OptimizeMode,
 ) *std.build.Step.Compile {
+    // const simde_lib = b.addStaticLibrary(.{
+    //     .name = "simde",
+    //     .root_source_file = null,
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+
+    // //
+    // // Compile from C source files
+    // //
+    // simde_lib.addCSourceFiles(.{
+    //     .flags = &[_][]const u8{
+    //         "-std=gnu17",
+    //         "-Wall",
+    //         "-Wextra",
+    //         "-Wpedantic",
+    //         "-Werror",
+    //         "-mavx",
+    //     },
+    //     .files = &[_][]const u8{
+    //         "box2c/extern/simde/check.h",
+    //         "box2c/extern/simde/debug-trap.h",
+    //         "box2c/extern/simde/hedley.h",
+    //         "box2c/extern/simde/simde-aes.h",
+    //         "box2c/extern/simde/simde-align.h",
+    //         "box2c/extern/simde/simde-arch.h",
+    //         "box2c/extern/simde/simde-bf16.h",
+    //         "box2c/extern/simde/simde-common.h",
+    //         "box2c/extern/simde/simde-complex.h",
+    //         "box2c/extern/simde/simde-constify.h",
+    //         "box2c/extern/simde/simde-detect-clang.h",
+    //         "box2c/extern/simde/simde-diagnostic.h",
+    //         "box2c/extern/simde/simde-f16.h",
+    //         "box2c/extern/simde/simde-features.h",
+    //         "box2c/extern/simde/simde-math.h",
+    //         "box2c/extern/simde/x86/aes.h",
+    //         "box2c/extern/simde/x86/avx.h",
+    //         "box2c/extern/simde/x86/avx2.h",
+    //         "box2c/extern/simde/x86/f16c.h",
+    //         "box2c/extern/simde/x86/fma.h",
+    //         "box2c/extern/simde/x86/mmx.h",
+    //         "box2c/extern/simde/x86/sse.h",
+    //         "box2c/extern/simde/x86/sse2.h",
+    //         "box2c/extern/simde/x86/sse3.h",
+    //         "box2c/extern/simde/x86/sse4.1.h",
+    //         "box2c/extern/simde/x86/sse4.2.h",
+    //         "box2c/extern/simde/x86/ssse3.h",
+    //     },
+    // });
+    // simde_lib.linkLibC();
+
     const box2c_lib = b.addStaticLibrary(.{
         .name = "box2c",
         .root_source_file = null,
@@ -20,7 +71,12 @@ pub fn build(
     //
     box2c_lib.addCSourceFiles(.{
         .flags = &[_][]const u8{
-            "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-mavx",
+            "-std=gnu17",
+            "-Wall",
+            "-Wextra",
+            "-Wpedantic",
+            "-Werror",
+            "-mavx",
         },
         .files = &[_][]const u8{
             "box2c/src/aabb.c",
@@ -77,6 +133,7 @@ pub fn build(
     });
     box2c_lib.addIncludePath(.{ .path = "box2c/include" });
     box2c_lib.addIncludePath(.{ .path = "box2c/extern/simde" });
+    // box2c_lib.linkLibrary(simde_lib);
     box2c_lib.linkSystemLibrary("m");
 
     b.installArtifact(box2c_lib);
