@@ -19,6 +19,10 @@ pub fn build(
     test_world.addIncludePath(.{ .path = "box2c/include" });
     test_world.linkLibrary(box2c_lib);
     test_world.linkSystemLibrary("m");
+    test_world.addIncludePath(.{ .path = "/home/wison/c/raylib/zig-out/include" });
+    test_world.addObjectFile(.{ .path = "/home/wison/c/raylib/zig-out/lib/libraylib.a" });
+    test_world.linkLibC();
+
     b.installArtifact(test_world);
 
     const run_test_world_cmd = b.addRunArtifact(test_world);
