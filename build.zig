@@ -1,6 +1,6 @@
 const std = @import("std");
 const box2c_build = @import("box2c_build.zig");
-const test_build = @import("test_build.zig");
+const demo_build = @import("demo_build.zig");
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
@@ -92,5 +92,5 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_exe_unit_tests.step);
 
     const box2c_lib = box2c_build.build(b, target, optimize);
-    test_build.build(b, target, optimize, box2c_lib);
+    demo_build.build(b, target, optimize, box2c_lib);
 }
