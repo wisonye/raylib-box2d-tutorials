@@ -96,11 +96,9 @@ Simulate a physical object in the real world, its physical attribute affects eve
    
 Each body has a type:
 
-    > =static= (default): zero mass, zero velocity, may be manually moved
-
-    > =kinematic=: zero mass, non-zero velocity set by user, moved by solver
-
-    > =dynamic=: positive mass, non-zero velocity determined by forces, moved by solver
+    - =static= (default): zero mass, zero velocity, may be manually moved
+    - =kinematic=: zero mass, non-zero velocity set by user, moved by solver
+    - =dynamic=: positive mass, non-zero velocity determined by forces, moved by solver
 
 The body itself doesn't have geometry attributes (how it looks), that's why usually a body will have a Shape attached to it to represent the geometry attributes.
 
