@@ -1,5 +1,86 @@
 * Raylib Box2D Tutorial
 
+** How to build and run
+
+*** Pull the submodule if you haven't yet, only do this once
+
+This repo depends on =box2c= and =raylib= repos and has separate build step to compile them from source.
+
+#+BEGIN_SRC bash
+  git submodule update --init
+
+  # Submodule 'box2c' (https://github.com/erincatto/box2c.git) registered for path 'box2c'
+  # Submodule 'raylib' (https://github.com/raysan5/raylib.git) registered for path 'raylib'
+  # Cloning into '~/temp/raylib-box2d-tutorials/box2c'...
+  # Cloning into '~/temp/raylib-box2d-tutorials/raylib'...
+  # Submodule path 'box2c': checked out '519ded32531e1574caba32700481f4b5294dc383'
+  # Submodule path 'raylib': checked out '36df9c5bd6999d5a047cf94097f258a27aaafc52'
+#+END_SRC
+
+
+*** List all supported demo run steps
+
+#+BEGIN_SRC bash
+ zig build --help | grep "run-" 
+#+END_SRC
+
+
+*** Run the particular demo
+
+For example:
+
+#+BEGIN_SRC bash
+  zig build run-click-to-generate-dynamic-boxes
+#+END_SRC
+
+All demo run steps don't create binary files into ~zig-out/bin~ folder, if you want to produce binary files, please run ~zig build~ or ~zig build -Drelease=true~.
+
+
+*** Produce release demo binary files
+
+#+BEGIN_SRC bash
+  # Optional, remove cache and existing files
+  rm -rf zig-cache zig-out
+
+  # Create release build
+  zig build -Drelease=true
+
+  # List release binaries
+  ls -lht zig-out/{lib,bin}
+  # zig-out/bin:
+  # total 13M
+  # -rwxr-xr-x 1 7.0M Dec 25 16:49 click-to-generate-dynamic-boxes*
+  # -rwxr-xr-x 1 6.0M Dec 25 16:49 temp-test*
+  # 
+  # zig-out/lib:
+  # total 14M
+  # -rw-r--r-- 1 14M Dec 25 16:49 libbox2c.a
+#+END_SRC
+
+
+1. =raylib_build.zig= runs ~cd raybuild && zig build~ command behind the scenes to create a static library and a few header files:
+
+    #+BEGIN_SRC bash
+      ls -lht raylib/zig-out/{lib, include, bin}
+      # ls: cannot access 'raylib/zig-out/bin': No such file or directory
+      # raylib/zig-out/lib:
+      # total 12M
+      # -rw-r--r-- 1 wison wison 12M Dec 25 16:25 libraylib.a
+      # 
+      # raylib/zig-out/include:
+      # total 416K
+      # -rw-r--r-- 1 wison wison 226K Dec 25 15:30 rlgl.h
+      # -rw-r--r-- 1 wison wison 123K Dec 25 15:30 raylib.h
+      # -rw-r--r-- 1 wison wison  62K Dec 25 15:30 raymath.h
+    #+END_SRC
+
+
+2. =box2c_buidl.zig= creates a static library: ~zig-out/lib/libbox2c.a~, and it depends on =raylib build=.
+
+
+3. =demo_build.zig= create all demo run steps, each demo binary links to ~raylib/zig-out/lib/libraylib.a~ and ~zig-out/lib/libbox2c.a~ statically.
+
+
 ** Core concepts
 
 *** World
@@ -74,4 +155,3 @@ Here are the steps about how to create a rigid body in the Box2D world:
 
 ** Box2D measures units and coordinates
 
-kgg
