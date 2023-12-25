@@ -7,7 +7,7 @@
 This repo depends on =box2c= and =raylib= repos and has separate build step to compile them from source.
 
 #+BEGIN_SRC bash
-  git submodule update --init
+  git submodule update --init --depth=1
 
   # Submodule 'box2c' (https://github.com/erincatto/box2c.git) registered for path 'box2c'
   # Submodule 'raylib' (https://github.com/raysan5/raylib.git) registered for path 'raylib'
