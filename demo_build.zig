@@ -50,4 +50,13 @@ pub fn build(
         "click-to-generate-dynamic-boxes",
         "src/click-to-generate-dynamic-boxes.zig",
     );
+
+    create_demo_binary_and_test_step(
+        b,
+        target,
+        optimize,
+        box2c_lib,
+        "temp-test",
+        "src/temp_test.zig",
+    );
 }
