@@ -34,7 +34,7 @@ pub fn create_demo_binary_and_test_step(
 }
 
 ///
-///
+/// Compile all demo binaries
 ///
 pub fn build(
     b: *std.Build,
