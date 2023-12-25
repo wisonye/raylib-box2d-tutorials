@@ -58,7 +58,7 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 #+END_SRC
 
 
-1. =raylib_build.zig= runs ~cd raybuild && zig build~ command behind the scenes to create a static library and a few header files:
+- =raylib_build.zig= runs ~cd raybuild && zig build~ command behind the scenes to create a static library and a few header files:
 
     #+BEGIN_SRC bash
       ls -lht raylib/zig-out/{lib, include, bin}
@@ -75,10 +75,10 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
     #+END_SRC
 
 
-2. =box2c_buidl.zig= creates a static library: ~zig-out/lib/libbox2c.a~, and it depends on =raylib build=.
+- =box2c_buidl.zig= creates a static library: ~zig-out/lib/libbox2c.a~, and it depends on =raylib build=.
 
 
-3. =demo_build.zig= create all demo run steps, each demo binary links to ~raylib/zig-out/lib/libraylib.a~ and ~zig-out/lib/libbox2c.a~ statically.
+- =demo_build.zig= create all demo run steps, each demo binary links to ~raylib/zig-out/lib/libraylib.a~ and ~zig-out/lib/libbox2c.a~ statically.
 
 
 ** Core concepts
@@ -97,7 +97,9 @@ Simulate a physical object in the real world, its physical attribute affects eve
 Each body has a type:
 
     > =static= (default): zero mass, zero velocity, may be manually moved
+
     > =kinematic=: zero mass, non-zero velocity set by user, moved by solver
+
     > =dynamic=: positive mass, non-zero velocity determined by forces, moved by solver
 
 The body itself doesn't have geometry attributes (how it looks), that's why usually a body will have a Shape attached to it to represent the geometry attributes.
@@ -107,15 +109,16 @@ The body itself doesn't have geometry attributes (how it looks), that's why usua
 
 It represents the geometry attributes of a given =Body=, it determines how the =Body= looks like:
 
-    > =Polygon Shape= - Including Box/Rectangle/Square (4 vertices polygon)
-    > =Circle Shape=
-    > =Capsule Shape=
-    > =Chain Shape= - used as surface
+    - =Polygon Shape= - Including Box/Rectangle/Square (4 vertices polygon)
+    - =Circle Shape=
+    - =Capsule Shape=
+    - =Chain Shape= - used as surface
 
 Also, it has the following physical attributes, e.g:
-    > friction (default value ~0.6~)
-    > restitution (default is ~0.0~): affect the bouncing behaviour
-    > density (default is ~0.0~): affect the mass
+
+    - friction (default value ~0.6~)
+    - restitution (default is ~0.0~): affect the bouncing behaviour
+    - density (default is ~0.0~): affect the mass
 
 
 
@@ -126,9 +129,9 @@ Here are the steps about how to create a rigid body in the Box2D world:
 1. Create ~b2BodyDef~ instance with the following attributes:
     - init position
     - type
-        > =static= (default): zero mass, zero velocity, may be manually moved
-        > =kinematic=: zero mass, non-zero velocity set by user, moved by solver
-        > =dynamic=: positive mass, non-zero velocity determined by forces, moved by solver
+        - =static= (default): zero mass, zero velocity, may be manually moved
+        - =kinematic=: zero mass, non-zero velocity set by user, moved by solver
+        - =dynamic=: positive mass, non-zero velocity determined by forces, moved by solver
 
 2. Create a body instance (~b2BodyId)~ by the given ~b2BodyDef~, body instance is heap-allocated and it has no geometry (no shape), it represents the physical attributes:
 
@@ -142,10 +145,10 @@ Here are the steps about how to create a rigid body in the Box2D world:
 
 3. Create =Shape= (heap-allocated) and attach it to the =Body=, it determines how the =Body=
    looks like:
-    > ~b2MakeBox/b2MakeRoundedBox~ -> Polygon Shape - Including Box/Rectangle/Square (4 vertices polygon)
-    > ~b2Circle~ -> Circle Shape
-    > ~b2MakeCapsule~ -> Capsule Shape
-    > =Chain Shape= - used as surface
+    - ~b2MakeBox/b2MakeRoundedBox~ -> Polygon Shape - Including Box/Rectangle/Square (4 vertices polygon)
+    - ~b2Circle~ -> Circle Shape
+    - ~b2MakeCapsule~ -> Capsule Shape
+    - =Chain Shape= - used as surface
 
    You need to create ~b2ShapeDef~ to describe the other physical attributes, e.g:
     - friction (default value ~0.6~)
