@@ -38,24 +38,40 @@ pub fn init(
     window_height: c_int,
     comptime window_title: []const u8,
 ) void {
+    //
+    // Enable `multisample anti-aliasing (MSAA)` to get better smoother edge rendering
+    //
+    rl.SetConfigFlags(rl.FLAG_MSAA_4X_HINT);
+
+    //
+    // Create game window
+    //
     rl.InitWindow(
         window_width,
         window_height,
         @as([*]const u8, @ptrCast(window_title)),
     );
 
+    //
     // Set our game FPS (frames-per-second)
+    //
     rl.SetTargetFPS(GAME_FPS);
 
+    //
     // Set tracing log level
+    //
     rl.SetTraceLogLevel(rl.LOG_DEBUG);
     // rl.SetTraceLogLevel(rl.LOG_INFO);
 
+    //
     // Hide the cursor
+    //
     // rl.HideCursor();
 
+    //
     // Enable waiting for events (keyboard/mouse/etc) on `EndDrawing()`,
     // no automatic event polling, save power consumsion.
+    //
     // rl.EnableEventWaiting();
 }
 
