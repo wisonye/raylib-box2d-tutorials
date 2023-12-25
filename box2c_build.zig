@@ -7,6 +7,7 @@ pub fn build(
     b: *std.Build,
     target: std.zig.CrossTarget,
     optimize: std.builtin.OptimizeMode,
+    raylib_build_step: *std.Build.Step,
 ) *std.build.Step.Compile {
     const box2c_lib = b.addStaticLibrary(.{
         .name = "box2c",
@@ -31,6 +32,8 @@ pub fn build(
             "box2c/src/aabb.c",
             "box2c/src/allocate.c",
             "box2c/src/allocate.h",
+            "box2c/src/arena_allocator.c",
+            "box2c/src/arena_allocator.h",
             "box2c/src/array.c",
             "box2c/src/array.h",
             "box2c/src/bitset.c",
@@ -60,6 +63,7 @@ pub fn build(
             "box2c/src/joint.h",
             "box2c/src/manifold.c",
             "box2c/src/math.c",
+            "box2c/src/motor_joint.c",
             "box2c/src/mouse_joint.c",
             "box2c/src/polygon_shape.h",
             "box2c/src/pool.c",
@@ -69,13 +73,12 @@ pub fn build(
             "box2c/src/shape.c",
             "box2c/src/shape.h",
             "box2c/src/solver_data.h",
-            "box2c/src/stack_allocator.c",
-            "box2c/src/stack_allocator.h",
             "box2c/src/table.c",
             "box2c/src/table.h",
             "box2c/src/timer.c",
             "box2c/src/types.c",
             "box2c/src/weld_joint.c",
+            "box2c/src/wheel_joint.c",
             "box2c/src/world.c",
             "box2c/src/world.h",
         },
@@ -83,6 +86,8 @@ pub fn build(
     box2c_lib.addIncludePath(.{ .path = "box2c/include" });
     box2c_lib.addIncludePath(.{ .path = "box2c/extern/simde" });
     box2c_lib.linkSystemLibrary("m");
+
+    box2c_lib.step.dependOn(raylib_build_step);
 
     b.installArtifact(box2c_lib);
 
