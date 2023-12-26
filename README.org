@@ -106,6 +106,8 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 
 ** [[file:tutorials/d-how-to-draw-image-and-textures.org][How to draw images and textures]]
 
+** [[file:tutorials/e-how-to-play-audio.org][How to play audio]]
+
 ** Working with fonts
 
 * =Box2D= tutorials
