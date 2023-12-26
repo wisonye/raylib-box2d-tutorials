@@ -51,10 +51,10 @@ pub fn main() !void {
 
     var dynamic_box_list = try std.ArrayList(DynamicBox).initCapacity(allocator, 100);
     try dynamic_box_list.appendSlice(&[_]DynamicBox{
-        try DynamicBox.init(&world, &camera, .{ .x = 0.0, .y = 10.0 }, 1.0, 1.0, null, null, 0.7),
-        try DynamicBox.init(&world, &camera, .{ .x = 2.0, .y = 20.0 }, 1.0, 1.0, null, null, 0.6),
-        try DynamicBox.init(&world, &camera, .{ .x = 3.0, .y = 30.0 }, 1.0, 1.0, null, null, 0.7),
-        try DynamicBox.init(&world, &camera, .{ .x = 4.0, .y = 40.0 }, 1.0, 1.0, null, null, 0.6),
+        try DynamicBox.init(&world, &camera, .{ .x = 0.0, .y = 10.0 }, 1.0, 1.0, null, null, null),
+        try DynamicBox.init(&world, &camera, .{ .x = 2.0, .y = 20.0 }, 1.0, 1.0, null, null, null),
+        try DynamicBox.init(&world, &camera, .{ .x = 3.0, .y = 30.0 }, 1.0, 1.0, null, null, null),
+        try DynamicBox.init(&world, &camera, .{ .x = 4.0, .y = 40.0 }, 1.0, 1.0, null, null, null),
     });
     defer dynamic_box_list.deinit();
 
@@ -119,7 +119,7 @@ pub fn main() !void {
                 1.0,
                 null,
                 null,
-                0.7,
+                null,
             ));
         }
 

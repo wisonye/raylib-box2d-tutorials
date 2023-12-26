@@ -15,6 +15,7 @@ const Camera2D = @import("./camera_2d.zig");
 const World = @import("./world.zig");
 
 const DynamicBox = @This();
+pub const default_restitution: f32 = 0.7;
 
 //
 // Dimension unit in meter
@@ -33,7 +34,7 @@ body_id: b.b2BodyId,
 /// - `body_width` and `body_height` are meters.
 /// - `density` (default is 0.0): affect the mass
 /// - `friction` (default value 0.6)
-/// - `restitution` (default is 0.0): affect the bouncing behaviour, default is no boucing
+/// - `restitution` (default is 0.7): affect the bouncing behaviour, default is no boucing
 ///
 pub fn init(
     world: *const World,
@@ -94,9 +95,7 @@ pub fn init(
         shape_def.friction = value;
     }
 
-    if (restitution) |value| {
-        shape_def.restitution = value;
-    }
+    shape_def.restitution = if (restitution) |value| value else default_restitution;
 
     //
     // Attach the shape to the body.
