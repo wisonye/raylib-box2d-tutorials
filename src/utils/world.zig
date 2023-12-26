@@ -23,9 +23,10 @@ ground_body_height: f32,
 /// Create Box2D world
 ///
 pub fn init() World {
-    const gravity: b.b2Vec2 = .{ .x = 0.0, .y = -10.0 };
+    //
+    // `b.b2DefaultWorldDef()` applies the default gravity {.x = 0.0, .y = -10.0}
+    //
     var world_def: b.b2WorldDef = b.b2DefaultWorldDef();
-    world_def.gravity = gravity;
 
     rl.TraceLog(rl.LOG_INFO, ">>> [ World > init ] - Box2D world created.");
 
