@@ -1,0 +1,7 @@
+* How to run the test code in this tutorial
+
+You can copy & paste all the test code in the following chapters and replace it in  ~src/temp_test.zig~, save, then run the following command:
+
+#+BEGIN_SRC bash
+  zig build run-temp-test 
+#+END_SRC

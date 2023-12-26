@@ -1,0 +1,222 @@
+* How to draw basic shapes
+
+#+BEGIN_SRC zig
+  const rl = @cImport({
+      @cInclude("raylib.h");
+  });
+
+  const GAME_FPS = 60;
+
+  const TRON_DARK = rl.Color{ .r = 0x23, .g = 0x21, .b = 0x1B, .a = 0xFF };
+  const TRON_LIGHT_BLUE = rl.Color{ .r = 0xAC, .g = 0xE6, .b = 0xFE, .a = 0xFF };
+  const TRON_BLUE = rl.Color{ .r = 0x6F, .g = 0xC3, .b = 0xDF, .a = 0xFF };
+  const TRON_YELLOW = rl.Color{ .r = 0xFF, .g = 0xE6, .b = 0x4D, .a = 0xFF };
+  const TRON_ORANGE = rl.Color{ .r = 0xFF, .g = 0x9F, .b = 0x1C, .a = 0xFF };
+  const TRON_RED = rl.Color{ .r = 0xF4, .g = 0x47, .b = 0x47, .a = 0xFF };
+
+  ///
+  ///
+  ///
+  pub fn main() !void {
+      // Create a window with a particular size and title
+      rl.InitWindow(1024, 768, "Minimal raylib program code template");
+      defer rl.CloseWindow();
+
+      // Set refresh rate (AKA, FPS: Frame Per Second)
+      rl.SetTargetFPS(GAME_FPS);
+
+      // Set tracing log level (DEBUG/INFO/WARN/ERROR)
+      rl.SetTraceLogLevel(rl.LOG_DEBUG);
+
+      // Hide the cursor
+      // rl.HideCursor();
+
+      // Optional, enable waiting for events (keyboard/mouse/etc) on `EndDrawing()`,
+      // no automatic event polling, save power consumsion.
+      // rl.EnableEventWaiting();
+
+      //
+      // Game loop
+      //
+      var is_running = true;
+      var rotation: f32 = 0.0;
+      while (is_running) {
+          // -------------------------------------------------------------
+          // Game logic
+          // -------------------------------------------------------------
+
+          //
+          // Press `Q` to exit
+          //
+          if (rl.IsKeyPressed(rl.KEY_Q)) {
+              is_running = false;
+              rl.TraceLog(rl.LOG_DEBUG, ">>> Press 'Q' to exit");
+          }
+
+          //
+          // If the window gets resized, we need to update the camera
+          //
+          if (rl.IsWindowResized()) {
+              rl.TraceLog(
+                  rl.LOG_DEBUG,
+                  ">>> New width: %d, new height: %d",
+                  rl.GetScreenWidth(),
+                  rl.GetScreenHeight(),
+              );
+          }
+
+          //
+          // Print mouse position when pressing left button
+          //
+          if (rl.IsMouseButtonPressed(rl.MOUSE_BUTTON_LEFT)) {
+              const mouse_pos = rl.GetMousePosition();
+              rl.TraceLog(
+                  rl.LOG_DEBUG,
+                  ">>> Mouse position: { x: %.2f, y: %.2f }",
+                  mouse_pos.x,
+                  mouse_pos.y,
+              );
+          }
+
+          // -------------------------------------------------------------
+          // Redraw the entire frame
+          // -------------------------------------------------------------
+          rl.BeginDrawing();
+
+          // Clear background
+          rl.ClearBackground(TRON_DARK);
+
+          //
+          // Get current font
+          //
+          const current_font = rl.GetFontDefault();
+
+          //
+          // Draw text
+          //
+          rl.DrawText(
+              "Draw text sample 1",
+              10.0, // x
+              10.0, // y
+              20.0, // font size
+              TRON_LIGHT_BLUE, // color
+          );
+
+          rl.DrawTextEx(
+              current_font, // specific font
+              "Draw text sample 2",
+              rl.Vector2{ .x = 10.0, .y = 30.0 }, // position
+              20.0, // font size
+              10.0, // spacing between characters
+              TRON_LIGHT_BLUE, // color
+          );
+
+          rl.DrawTextPro(
+              current_font, // specific font
+              "Draw text sample 3",
+              rl.Vector2{ .x = 10.0, .y = 50.0 }, // position
+              rl.Vector2{ .x = 0.0, .y = 0.0 }, // origin to rotate
+              30.0, // rotation angle
+              20.0, // font size
+              5.0, // spacing between characters
+              TRON_LIGHT_BLUE, // color
+          );
+
+          //
+          // Draw circle
+          //
+          const window_center_x = @as(f32, @floatFromInt(rl.GetScreenWidth())) / 2.0;
+
+          rl.DrawCircle(
+              @as(c_int, @intFromFloat(window_center_x)), // center x
+              30.0, // center y
+              20.0, // radius
+              TRON_YELLOW, // color
+          );
+
+          rl.DrawCircleV(
+              rl.Vector2{ .x = window_center_x, .y = 80.0 }, // center position
+              20.0, // radius
+              TRON_YELLOW, // color
+          );
+
+          rl.DrawCircleLines(
+              @as(c_int, @intFromFloat(window_center_x)), // center x
+              130.0, // center y
+              20.0, // radius
+              TRON_YELLOW, // color
+          );
+
+          //
+          // Draw rectangle
+          //
+          const window_width = rl.GetScreenWidth();
+          const window_width_float = @as(f32, @floatFromInt(window_width));
+
+          rl.DrawRectangle(
+              window_width - 150, // x
+              10.0, // y
+              100.0, // width
+              50.0, // height
+              TRON_ORANGE, // color
+          );
+
+          rl.DrawRectangleV(
+              rl.Vector2{ .x = window_width_float - 150.0, .y = 70.0 }, // position
+              rl.Vector2{ .x = 100.0, .y = 50.0 }, // size (width, height)
+              TRON_ORANGE, // color
+          );
+
+          // Rotate rectangle
+          const rect_1_width = 100.0;
+          const rect_1_height = 50.0;
+          const rect_1 =
+              rl.Rectangle{
+              .x = window_width_float - 150.0 + rect_1_width / 2.0,
+              .y = 130.0 + rect_1_height / 2.0,
+              .width = rect_1_width,
+              .height = rect_1_height,
+          };
+          rotation += 5.0;
+          if (rotation > 360) {
+              rotation = 0.0;
+          }
+          rl.DrawRectanglePro(
+              rect_1,
+              //
+              // origin to rotate (relative to the rectangle left-top point), if you want the
+              // rectangle rotate based on the center position, you HAVE TO increase the
+              // rectangle position (left/top) with half width and half height!!!
+              //
+              // That's why:
+              //
+              // .x = window_width_float - 150.0 + rect_1_width / 2.0,
+              // .y = 130.0 + rect_1_height / 2.0,
+              //
+              rl.Vector2{ .x = rect_1.width / 2.0, .y = rect_1.height / 2.0 },
+              rotation,
+              TRON_RED,
+          );
+
+          rl.DrawRectangleRec(
+              rl.Rectangle{
+                  .x = window_width_float - 150.0,
+                  .y = 200.0,
+                  .width = 100.0,
+                  .height = 50.0,
+              },
+              TRON_ORANGE,
+          );
+
+          rl.DrawRectangleLines(
+              window_width - 150,
+              260,
+              100,
+              50,
+              TRON_ORANGE,
+          );
+
+          rl.EndDrawing();
+      }
+  }
+#+END_SRC

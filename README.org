@@ -1,6 +1,12 @@
 * Raylib Box2D Tutorial
 
-** How to build and run
+This tutorial combines =Zig=, =Raylib= and =Box2D= together to show some cool stuff.
+
+Long story short, =Raylib= is capable of drawing 2D/3D graphics/UIs for any purpose, and =Box2D= is capable of simulating real-world physics.
+
+This project uses =zig 0.12.0-dev.1834+f36ac227b=, if you use =zig 0.11=, all ~xxx_build.zig~ and ~build.zig~ might not work.
+
+** How to build and run all demos
 
 *** Pull the submodule if you haven't yet, only do this once
 
@@ -68,8 +74,8 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 - =raylib_build.zig= runs ~cd raybuild && zig build~ command behind the scenes to create a static library and a few header files:
 
     #+BEGIN_SRC bash
-      ls -lht raylib/zig-out/{lib, include, bin}
-      # ls: cannot access 'raylib/zig-out/bin': No such file or directory
+      ls -lht raylib/zig-out/{lib, include}
+
       # raylib/zig-out/lib:
       # total 12M
       # -rw-r--r-- 1 wison wison 12M Dec 25 16:25 libraylib.a
@@ -87,6 +93,24 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 
 - =demo_build.zig= create all demo run steps, each demo binary links to ~raylib/zig-out/lib/libraylib.a~ and ~zig-out/lib/libbox2c.a~ statically.
 
+
+* =Raylib= tutorials
+
+=Raylib= API cheatsheet is [[https://www.raylib.com/cheatsheet/cheatsheet.html][here]].
+
+** [[file:tutorials/a-how-to-run-test-code.org][How to run the test code in this tutorial]]
+
+** [[file:tutorials/b-a-minial-code-template-of-regular-raylib-program.org][Minimal code template of a regular raylib program]]
+
+** [[file:tutorials/c-a-how-to-draw-basic-shapes.org][How to draw basic shapes]]
+
+** How to draw images
+
+** Working with fonts
+
+** Working with textures
+
+* =Box2D= tutorials
 
 ** Core concepts
 
