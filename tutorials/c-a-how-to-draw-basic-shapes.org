@@ -1,5 +1,152 @@
 * How to draw basic shapes
 
+** Draw text
+
+#+BEGIN_SRC c
+  // Draw current FPS
+  void DrawFPS(int posX, int posY);
+
+  // Draw text (using default font)
+  void DrawText(const char *text, int posX, int posY, int fontSize, Color color);
+
+  // Draw text using font and additional parameters
+  void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);
+
+  // Draw text using Font and pro parameters (rotation)
+  void DrawTextPro(Font font, const char *text, Vector2 position, Vector2 origin, float rotation, float fontSize, float spacing, Color tint);
+
+  // Draw one character (codepoint)
+  void DrawTextCodepoint(Font font, int codepoint, Vector2 position, float fontSize, Color tint);
+
+  // Draw multiple character (codepoint)
+  void DrawTextCodepoints(Font font, const int *codepoints, int codepointCount, Vector2 position, float fontSize, float spacing, Color tint);
+#+END_SRC
+
+
+** Draw basic shapes
+
+*** Draw pixel
+
+#+BEGIN_SRC c
+  // Draw a pixel
+  void DrawPixel(int posX, int posY, Color color);
+  // Draw a pixel (Vector version)
+  void DrawPixelV(Vector2 position, Color color);
+#+END_SRC
+
+
+*** Draw line
+
+#+BEGIN_SRC c
+  // Draw a line
+  void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);
+  // Draw a line (using gl lines)
+  void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);
+  // Draw a line (using triangles/quads)
+  void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);
+  // Draw lines sequence (using gl lines)
+  void DrawLineStrip(Vector2 *points, int pointCount, Color color);
+  // Draw line segment cubic-bezier in-out interpolation
+  void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);
+#+END_SRC
+
+
+*** Draw circle
+
+#+BEGIN_SRC c
+  // Draw a color-filled circle
+  void DrawCircle(int centerX, int centerY, float radius, Color color);
+  // Draw a piece of a circle
+  void DrawCircleSector(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color);
+  // Draw circle sector outline
+  void DrawCircleSectorLines(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color);
+  // Draw a gradient-filled circle
+  void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);
+  // Draw a color-filled circle (Vector version)
+  void DrawCircleV(Vector2 center, float radius, Color color);
+  // Draw circle outline
+  void DrawCircleLines(int centerX, int centerY, float radius, Color color);
+  // Draw circle outline (Vector version)
+  void DrawCircleLinesV(Vector2 center, float radius, Color color);
+#+END_SRC
+
+
+*** Draw ellipse
+
+#+BEGIN_SRC c
+  // Draw ellipse
+  void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
+  // Draw ellipse outline
+  void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);
+#+END_SRC
+
+
+*** Draw ring
+
+#+BEGIN_SRC c
+  // Draw ring
+  void DrawRing(Vector2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, int segments, Color color);
+  // Draw ring outline
+  void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, int segments, Color color);
+#+END_SRC
+
+
+*** Draw rectangle
+
+#+BEGIN_SRC c
+  // Draw a color-filled rectangle
+  void DrawRectangle(int posX, int posY, int width, int height, Color color);
+  // Draw a color-filled rectangle (Vector version)
+  void DrawRectangleV(Vector2 position, Vector2 size, Color color);
+  // Draw a color-filled rectangle
+  void DrawRectangleRec(Rectangle rec, Color color);
+  // Draw a color-filled rectangle with pro parameters
+  void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);
+  // Draw a vertical-gradient-filled rectangle
+  void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);
+  // Draw a horizontal-gradient-filled rectangle
+  void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);
+  // Draw a gradient-filled rectangle with custom vertex colors
+  void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);
+  // Draw rectangle outline
+  void DrawRectangleLines(int posX, int posY, int width, int height, Color color);
+  // Draw rectangle outline with extended parameters
+  void DrawRectangleLinesEx(Rectangle rec, float lineThick, Color color);
+  // Draw rectangle with rounded edges
+  void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);
+  // Draw rectangle with rounded edges outline
+  void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, float lineThick, Color color);
+#+END_SRC
+
+
+*** Draw triangle
+
+#+BEGIN_SRC c
+  // Draw a color-filled triangle (vertex in counter-clockwise order!)
+  void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
+  // Draw triangle outline (vertex in counter-clockwise order!)
+  void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
+  // Draw a triangle fan defined by points (first vertex is the center)
+  void DrawTriangleFan(Vector2 *points, int pointCount, Color color);
+  // Draw a triangle strip defined by points
+  void DrawTriangleStrip(Vector2 *points, int pointCount, Color color);
+#+END_SRC
+
+
+*** Draw polygon
+
+#+BEGIN_SRC c
+  // Draw a regular polygon (Vector version)
+  void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);
+  // Draw a polygon outline of n sides
+  void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);
+  // Draw a polygon outline of n sides with extended parameters
+  void DrawPolyLinesEx(Vector2 center, int sides, float radius, float rotation, float lineThick, Color color);
+#+END_SRC
+
+
+** Example
+
 #+BEGIN_SRC zig
   const rl = @cImport({
       @cInclude("raylib.h");
