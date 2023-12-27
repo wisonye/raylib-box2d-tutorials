@@ -40,9 +40,9 @@ const Building = struct {
                     .x = -2000.0 + last_building_x,
                 },
                 .color = .{
-                    .r = @as(u8, @intCast(rl.GetRandomValue(200, 240))),
-                    .g = @as(u8, @intCast(rl.GetRandomValue(200, 240))),
-                    .b = @as(u8, @intCast(rl.GetRandomValue(200, 250))),
+                    .r = @as(u8, @intCast(rl.GetRandomValue(100, 250))),
+                    .g = @as(u8, @intCast(rl.GetRandomValue(100, 250))),
+                    .b = @as(u8, @intCast(rl.GetRandomValue(100, 250))),
                     .a = 255,
                 },
             };
@@ -84,10 +84,16 @@ const PlayerBox = struct {
 ///
 ///
 pub fn main() !void {
+    //
+    // Enable `multisample anti-aliasing (MSAA)` to get better smoother edge rendering
+    //
+    rl.SetConfigFlags(rl.FLAG_MSAA_4X_HINT);
+
+    //
+    // Create a window with a particular size and title
+    //
     const screen_width: c_int = 1024;
     const screen_height: c_int = 768;
-
-    // Create a window with a particular size and title
     rl.InitWindow(screen_width, screen_height, "How to draw images and textures");
     defer rl.CloseWindow();
 
@@ -110,6 +116,7 @@ pub fn main() !void {
     //
     // Setup camera
     //
+    const default_camera_zoom = 0.3;
     var camera = rl.Camera2D{
         //
         // Camera/window origin in screen coordinate, set to center of the screen,
@@ -120,7 +127,7 @@ pub fn main() !void {
             .y = @as(f32, @floatFromInt(screen_height)) / 2.0,
         },
         .rotation = 0.0,
-        .zoom = 1.0,
+        .zoom = default_camera_zoom,
         //
         // World space point map to the camera/window origin
         //
@@ -164,9 +171,9 @@ pub fn main() !void {
         //
         // Camera rotation controls
         //
-        if (rl.IsKeyDown(rl.KEY_A)) {
+        if (rl.IsKeyDown(rl.KEY_S)) {
             camera.rotation -= 1.0;
-        } else if (rl.IsKeyDown(rl.KEY_S)) {
+        } else if (rl.IsKeyDown(rl.KEY_F)) {
             camera.rotation += 1.0;
         }
 
@@ -194,7 +201,7 @@ pub fn main() !void {
         // Camera reset (zoom and rotation)
         //
         if (rl.IsKeyPressed(rl.KEY_R)) {
-            camera.zoom = 1.0;
+            camera.zoom = default_camera_zoom;
             camera.rotation = 0.0;
         }
 
@@ -245,7 +252,7 @@ pub fn main() !void {
         rl.DrawText("Free 2d camera controls:", 20, 20, 20, rl.BLACK);
         rl.DrawText("- Right/Left to move Offset", 40, 60, 20, TRON_DARK);
         rl.DrawText("- Mouse Wheel to Zoom in-out", 40, 80, 20, TRON_DARK);
-        rl.DrawText("- A / S to Rotate", 40, 100, 20, TRON_DARK);
+        rl.DrawText("- S / F to Rotate", 40, 100, 20, TRON_DARK);
         rl.DrawText("- R to reset Zoom and Rotation", 40, 120, 20, TRON_DARK);
 
         rl.EndDrawing();
