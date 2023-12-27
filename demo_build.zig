@@ -71,4 +71,13 @@ pub fn build(
         "centre-with-player-position",
         "src/camera_examples/2d/centre-with-player-position.zig",
     );
+
+    create_demo_binary_and_test_step(
+        b,
+        target,
+        optimize,
+        box2c_lib,
+        "move-and-zoom-by-mouse",
+        "src/camera_examples/2d/move-and-zoom-by-mouse.zig",
+    );
 }
