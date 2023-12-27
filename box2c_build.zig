@@ -7,7 +7,7 @@ pub fn build(
     b: *std.Build,
     target: std.zig.CrossTarget,
     optimize: std.builtin.OptimizeMode,
-    raylib_build_step: *std.Build.Step,
+    // raylib_build_step: *std.Build.Step,
 ) *std.build.Step.Compile {
     const box2c_lib = b.addStaticLibrary(.{
         .name = "box2c",
@@ -87,7 +87,7 @@ pub fn build(
     box2c_lib.addIncludePath(.{ .path = "box2c/extern/simde" });
     box2c_lib.linkSystemLibrary("m");
 
-    box2c_lib.step.dependOn(raylib_build_step);
+    // box2c_lib.step.dependOn(raylib_build_step);
 
     b.installArtifact(box2c_lib);
 

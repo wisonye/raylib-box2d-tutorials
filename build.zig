@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const raylib_build = @import("raylib_build.zig");
+// const raylib_build = @import("raylib_build.zig");
 const box2c_build = @import("box2c_build.zig");
 const demo_build = @import("demo_build.zig");
 const tutorial_example_build = @import("tutorial_example_build.zig");
@@ -26,9 +26,9 @@ pub fn build(b: *std.Build) void {
         // .preferred_optimize_mode = std.builtin.OptimizeMode.ReleaseSmall,
     });
 
-    const raylib_build_cmd_step = raylib_build.build(b);
-
-    const box2c_lib = box2c_build.build(b, target, optimize, raylib_build_cmd_step);
+    // const raylib_build_cmd_step = raylib_build.build(b);
+    // const box2c_lib = box2c_build.build(b, target, optimize, raylib_build_cmd_step);
+    const box2c_lib = box2c_build.build(b, target, optimize);
     demo_build.build(b, target, optimize, box2c_lib);
     tutorial_example_build.build(b, target, optimize, box2c_lib);
 }

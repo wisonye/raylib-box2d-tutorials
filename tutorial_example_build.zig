@@ -21,8 +21,10 @@ pub fn create_tutorial_example_binary_and_test_step(
     exe.addIncludePath(.{ .path = "box2c/include" });
     exe.linkLibrary(box2c_lib);
     exe.linkSystemLibrary("m");
-    exe.addIncludePath(.{ .path = "raylib/zig-out/include" });
-    exe.addObjectFile(.{ .path = "raylib/zig-out/lib/libraylib.a" });
+    // exe.addIncludePath(.{ .path = "raylib/zig-out/include" });
+    // exe.addObjectFile(.{ .path = "raylib/zig-out/lib/libraylib.a" });
+    exe.addIncludePath(.{ .path = "/home/wison/c/raylib/zig-out/include" });
+    exe.addObjectFile(.{ .path = "/home/wison/c/raylib/zig-out/lib/libraylib.a" });
     exe.linkLibC();
 
     b.installArtifact(exe);
