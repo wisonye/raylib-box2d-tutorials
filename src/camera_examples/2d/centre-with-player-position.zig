@@ -94,7 +94,7 @@ pub fn main() !void {
     //
     const screen_width: c_int = 1024;
     const screen_height: c_int = 768;
-    rl.InitWindow(screen_width, screen_height, "How to draw images and textures");
+    rl.InitWindow(screen_width, screen_height, "Camera 2D centre with player position");
     defer rl.CloseWindow();
 
     // Set refresh rate (AKA, FPS: Frame Per Second)
