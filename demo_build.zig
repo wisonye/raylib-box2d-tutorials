@@ -59,4 +59,16 @@ pub fn build(
         "temp-test",
         "src/temp_test.zig",
     );
+
+    // --------------------------------------------------------------
+    // Camera test examples
+    // --------------------------------------------------------------
+    create_demo_binary_and_test_step(
+        b,
+        target,
+        optimize,
+        box2c_lib,
+        "centre-with-player-position",
+        "src/camera_examples/2d/centre-with-player-position.zig",
+    );
 }
