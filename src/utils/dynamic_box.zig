@@ -130,20 +130,19 @@ pub fn redraw(self: *const DynamicBox) void {
     const world_position = b.b2Body_GetPosition(self.body_id);
     const angle = b.b2Body_GetAngle(self.body_id);
 
-    // Meter to pixel
+    // World unit (meter) to pixel
     const width = self.body_width / Game.PIXEL_TO_WORLD_SCALE_FACTOR;
     const height = self.body_height / Game.PIXEL_TO_WORLD_SCALE_FACTOR;
 
-    // World coordinate to screen camera coordinate (camera's `offset/origin` on screen)
-    const screen_pos = rl.Vector2{
-        .x = world_position.x / Game.PIXEL_TO_WORLD_SCALE_FACTOR,
-        .y = (world_position.y / Game.PIXEL_TO_WORLD_SCALE_FACTOR) * -1.0,
-    };
+    const screen_pos = self.camera.world_to_screen_pos(.{
+        .x = world_position.x,
+        .y = world_position.y,
+    });
 
     // rl.TraceLog(
     //     rl.LOG_DEBUG,
-    //     ">>> [ Box > redraw ] - body position - x: %.2f y: %.2f, angle: %.2f, " ++
-    //         "screen position - x: %.2f y: %.2f, screen_width: %.2f, screen_height: %.2f",
+    //     ">>> [ Box > redraw ] - body position -  { %.2f, %.2f }, angle: %.2f, " ++
+    //         "screen position - { %.2f, %.2f }, screen_width: %.2f, screen_height: %.2f",
     //     world_position.x,
     //     world_position.y,
     //     angle,

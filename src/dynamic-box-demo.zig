@@ -35,6 +35,7 @@ pub fn main() !void {
     var camera = Camera2D.init(
         @as(usize, @intCast(rl.GetScreenWidth())),
         @as(usize, @intCast(rl.GetScreenHeight())),
+        Game.PIXEL_TO_WORLD_SCALE_FACTOR,
     );
 
     //
@@ -113,13 +114,20 @@ pub fn main() !void {
                 mouse_pos.y,
             );
 
-            const current_camera_zoom = camera.get_zoom();
+            const screen_to_world_pos = camera.screen_to_world_pos(mouse_pos);
+
+            rl.TraceLog(
+                rl.LOG_DEBUG,
+                ">>> [ main loop ] - screen_to_world_pos: { %.2f, %.2f}",
+                screen_to_world_pos.x,
+                screen_to_world_pos.y,
+            );
             try dynamic_box_list.append(try DynamicBox.init(
                 &world,
                 &camera,
                 .{
-                    .x = (mouse_pos.x - @as(f32, @floatFromInt(rl.GetScreenWidth())) / 2.0) * Game.PIXEL_TO_WORLD_SCALE_FACTOR / current_camera_zoom,
-                    .y = ((mouse_pos.y - @as(f32, @floatFromInt(rl.GetScreenHeight())) / 2.0) * Game.PIXEL_TO_WORLD_SCALE_FACTOR) / current_camera_zoom * -1.0,
+                    .x = screen_to_world_pos.x,
+                    .y = screen_to_world_pos.y,
                 },
                 1.0,
                 1.0,

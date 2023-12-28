@@ -179,7 +179,7 @@ pub fn main() !void {
         rl.EndMode2D();
 
         rl.DrawText(
-            "Mouse left button drag to move camera's target, mouse wheel to zoom",
+            "Mouse left button drag to move camera's target",
             10,
             10,
             20,
