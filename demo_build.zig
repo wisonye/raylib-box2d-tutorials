@@ -80,4 +80,13 @@ pub fn build(
         "move-and-zoom-by-mouse",
         "src/camera_examples/2d/move-and-zoom-by-mouse.zig",
     );
+
+    create_demo_binary_and_test_step(
+        b,
+        target,
+        optimize,
+        box2c_lib,
+        "first-person-view",
+        "src/camera_examples/3d/first-person-view.zig",
+    );
 }
