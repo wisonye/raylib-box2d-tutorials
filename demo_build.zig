@@ -47,8 +47,8 @@ pub fn build(
         target,
         optimize,
         box2c_lib,
-        "click-to-generate-dynamic-boxes",
-        "src/click-to-generate-dynamic-boxes.zig",
+        "dynamic-box",
+        "src/dynamic-box-demo.zig",
     );
 
     create_demo_binary_and_test_step(

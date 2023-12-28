@@ -127,31 +127,40 @@ pub fn init(
 ///
 ///
 pub fn redraw(self: *const DynamicBox) void {
-    const position = b.b2Body_GetPosition(self.body_id);
+    const world_position = b.b2Body_GetPosition(self.body_id);
     const angle = b.b2Body_GetAngle(self.body_id);
-    const screen_vec = rl.Vector2{
-        .x = position.x / Game.PIXEL_TO_WORLD_SCALE_FACTOR,
-        .y = (position.y / Game.PIXEL_TO_WORLD_SCALE_FACTOR) * -1.0,
-    };
+
+    // Meter to pixel
     const width = self.body_width / Game.PIXEL_TO_WORLD_SCALE_FACTOR;
     const height = self.body_height / Game.PIXEL_TO_WORLD_SCALE_FACTOR;
+
+    // World coordinate to screen camera coordinate (camera's `offset/origin` on screen)
+    const screen_pos = rl.Vector2{
+        .x = world_position.x / Game.PIXEL_TO_WORLD_SCALE_FACTOR,
+        .y = (world_position.y / Game.PIXEL_TO_WORLD_SCALE_FACTOR) * -1.0,
+    };
 
     // rl.TraceLog(
     //     rl.LOG_DEBUG,
     //     ">>> [ Box > redraw ] - body position - x: %.2f y: %.2f, angle: %.2f, " ++
     //         "screen position - x: %.2f y: %.2f, screen_width: %.2f, screen_height: %.2f",
-    //     position.x,
-    //     position.y,
+    //     world_position.x,
+    //     world_position.y,
     //     angle,
-    //     screen_vec.x,
-    //     screen_vec.y,
+    //     screen_pos.x,
+    //     screen_pos.y,
     //     width,
     //     height,
     // );
 
     const rect = rl.Rectangle{
-        .x = screen_vec.x - (width / 2),
-        .y = screen_vec.y - (height / 2),
+        //
+        // origin to rotate (relative to the rectangle left-top point), if you want the
+        // rectangle rotate based on the center position, you HAVE TO increase the
+        // rectangle position (left/top) with half width and half height!!!
+        //
+        .x = screen_pos.x, // -> x. = screen_pos.x + (width / 2.0) - (width / 2.0),
+        .y = screen_pos.y, // -> .y = screen_pos.y + (height / 2.0) - (height / 2.0),
         .width = width,
         .height = height,
     };
@@ -159,11 +168,19 @@ pub fn redraw(self: *const DynamicBox) void {
     rl.DrawRectanglePro(
         rect,
         //
-        // Rotation origin is related to the left-top position {0,0}, if you want it to
-        // rotate on the centre of the rectangle, that means {width/2, height/2}.
+        // origin to rotate (relative to the rectangle left-top point), if you want the
+        // rectangle rotate based on the center position, you HAVE TO increase the
+        // rectangle position (left/top) with half width and half height!!!
         //
         rl.Vector2{ .x = width / 2, .y = height / 2 },
         angle,
         Game.Color.TRON_RED,
+    );
+
+    // Draw center point: the world's origin (0,0)
+    rl.DrawCircleV(
+        .{ .x = screen_pos.x, .y = screen_pos.y },
+        1.0,
+        Game.Color.TRON_DARK,
     );
 }

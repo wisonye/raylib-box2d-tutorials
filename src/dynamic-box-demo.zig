@@ -20,8 +20,14 @@ pub fn main() !void {
     //
     // Raylib game init
     //
-    Game.init(1024, 768, "Raylib Box2D Demo: Click to generate dynamic boxes");
+    Game.init(1024, 768, "[ Raylib Box2D Demo ] - Dynamic box");
     defer Game.deinit();
+
+    //
+    // Load custom font
+    //
+    const my_font = rl.LoadFont("resources/SauceCodeProNerdFont-Medium.ttf");
+    defer rl.UnloadFont(my_font);
 
     //
     // Create 2D camera
@@ -96,9 +102,9 @@ pub fn main() !void {
         }
 
         //
-        // Press `G` to generate new dynamic body
+        // Press `D` to generate new dynamic body
         //
-        if (rl.IsKeyPressed(rl.KEY_G)) {
+        if (rl.IsKeyPressed(rl.KEY_D)) {
             const mouse_pos = rl.GetMousePosition();
             rl.TraceLog(
                 rl.LOG_INFO,
@@ -141,9 +147,32 @@ pub fn main() !void {
 
         rl.EndMode2D();
 
-        rl.DrawText("Raylib Box2D Demo", 20.0, 20.0, 30.0, Game.Color.TRON_LIGHT_BLUE);
-        rl.DrawText("- Press 'G' to create a dynamic box at the mouse position", 40.0, 80.0, 20.0, Game.Color.TRON_YELLOW);
-        rl.DrawText("- Mouse wheel to scale camera view", 40.0, 100.0, 20.0, Game.Color.TRON_YELLOW);
+        const title_font_size = @as(f32, @floatFromInt(my_font.baseSize)) * 1.3;
+        const font_size = @as(f32, @floatFromInt(my_font.baseSize)) * 0.9;
+        rl.DrawTextEx(
+            my_font,
+            "Raylib Box2D Demo",
+            .{ .x = 20.0, .y = 20.0 },
+            title_font_size,
+            2.0,
+            Game.Color.TRON_BLUE,
+        );
+        rl.DrawTextEx(
+            my_font,
+            "- 'D' to drop a dynamic box at the mouse position",
+            .{ .x = 30.0, .y = 80.0 },
+            font_size,
+            2.0,
+            Game.Color.TRON_LIGHT_BLUE,
+        );
+        rl.DrawTextEx(
+            my_font,
+            "- Mouse wheel to scale camera view",
+            .{ .x = 30.0, .y = 110.0 },
+            font_size,
+            2.0,
+            Game.Color.TRON_LIGHT_BLUE,
+        );
 
         rl.EndDrawing();
     }

@@ -132,43 +132,55 @@ pub fn deinit(self: *World) void {
 ///
 ///
 pub fn redraw_ground_box(self: *const World) void {
-    const position = b.b2Body_GetPosition(self.ground_body_id.?);
+    const world_position = b.b2Body_GetPosition(self.ground_body_id.?);
     const angle = b.b2Body_GetAngle(self.ground_body_id.?);
 
+    // Meter to pixel
     const width = self.ground_body_width / Game.PIXEL_TO_WORLD_SCALE_FACTOR;
     const height = self.ground_body_height / Game.PIXEL_TO_WORLD_SCALE_FACTOR;
-    const screen_vec = rl.Vector2{
-        .x = position.x / Game.PIXEL_TO_WORLD_SCALE_FACTOR + width / 2.0,
-        .y = (position.y / Game.PIXEL_TO_WORLD_SCALE_FACTOR) * -1.0 + height / 2.0,
+
+    // World coordinate to screen camera coordinate (camera's `offset/origin` on screen)
+    const screen_pos = rl.Vector2{
+        .x = world_position.x / Game.PIXEL_TO_WORLD_SCALE_FACTOR,
+        .y = (world_position.y / Game.PIXEL_TO_WORLD_SCALE_FACTOR) * -1.0,
     };
 
     // rl.TraceLog(
     //     rl.LOG_DEBUG,
     //     ">>> [ Box > redraw_ground_box ] - body position - x: %.2f y: %.2f, angle: %.2f, " ++
     //         "screen position - x: %.2f y: %.2f, screen_width: %.2f, screen_height: %.2f",
-    //     position.x,
-    //     position.y,
+    //     world_position.x,
+    //     world_position.y,
     //     angle,
-    //     screen_vec.x,
-    //     screen_vec.y,
+    //     screen_pos.x,
+    //     screen_pos.y,
     //     width,
     //     height,
     // );
 
     const rect = rl.Rectangle{
-        .x = screen_vec.x - (width / 2),
-        .y = screen_vec.y - (height / 2),
+        .x = screen_pos.x - (width / 2),
+        .y = screen_pos.y - (height / 2),
         .width = width,
         .height = height,
     };
     rl.DrawRectanglePro(
         rect,
-        //
-        // Rotation origin is related to the left-top position {0,0}, if you want it to
-        // rotate on the centre of the rectangle, that means {width/2, height/2}.
-        //
-        rl.Vector2{ .x = width / 2, .y = height / 2 },
+        .{ .x = 0.0, .y = 0.0 },
         angle,
         Game.Color.TRON_ORANGE,
     );
+
+    // Draw center line
+    rl.DrawLine(
+        @intFromFloat(screen_pos.x - (width / 2)),
+        @intFromFloat(screen_pos.y),
+        @intFromFloat(screen_pos.x + (width / 2)),
+        @intFromFloat(screen_pos.y),
+        Game.Color.TRON_DARK,
+    );
+
+    // Draw center point: the world's origin (0,0)
+    // rl.DrawCircleV(.{ .x = screen_pos.x, .y = screen_pos.y }, 4.0, Game.Color.TRON_RED);
+    rl.DrawCircleV(.{ .x = 0.0, .y = 0.0 }, 2.0, Game.Color.TRON_DARK);
 }

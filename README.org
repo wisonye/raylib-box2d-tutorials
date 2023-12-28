@@ -43,7 +43,7 @@ This repo depends on =box2c= and =raylib= repos and has separate build step to c
 For example:
 
 #+BEGIN_SRC bash
-  zig build run-click-to-generate-dynamic-boxes
+  zig build run-dynamic-box
 #+END_SRC
 
 All demo run steps don't create binary files into ~zig-out/bin~ folder, if you want to produce binary files, please run ~zig build~ or ~zig build -Drelease=true~.
