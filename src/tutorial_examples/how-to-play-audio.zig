@@ -38,8 +38,8 @@ pub fn main() !void {
     //
     // Load background music and sound effects
     //
-    const sound_effect = rl.LoadSound("resources/enable_fireball.wav");
-    const background_music = rl.LoadMusicStream("resources/country.mp3");
+    const sound_effect = rl.LoadSound("resources/sound-effects/enable_fireball.wav");
+    const background_music = rl.LoadMusicStream("resources/background-musics/be-jammin.mp3");
 
     //
     // Play background music

@@ -35,9 +35,9 @@ pub fn main() !void {
     //
     // Load custom fonts
     //
-    const my_font_1 = rl.LoadFont("resources/SauceCodeProNerdFont-Medium.ttf");
-    const my_font_2 = rl.LoadFont("resources/anonymous_pro_bold.ttf");
-    const my_font_3 = rl.LoadFont("resources/pixantiqua.ttf");
+    const my_font_1 = rl.LoadFont("resources/fonts/SauceCodeProNerdFont-Medium.ttf");
+    const my_font_2 = rl.LoadFont("resources/fonts/anonymous_pro_bold.ttf");
+    const my_font_3 = rl.LoadFont("resources/fonts/pixantiqua.ttf");
     defer rl.UnloadFont(my_font_1);
     defer rl.UnloadFont(my_font_2);
     defer rl.UnloadFont(my_font_3);

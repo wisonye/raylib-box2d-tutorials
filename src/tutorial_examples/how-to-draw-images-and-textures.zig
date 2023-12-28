@@ -35,7 +35,7 @@ pub fn main() !void {
     //
     // Load image texture
     //
-    var laser_sword_image = rl.LoadImage("resources/blue_laser.png");
+    var laser_sword_image = rl.LoadImage("resources/textures/blue_laser.png");
     rl.ImageResize(@as([*c]rl.Image, @ptrCast(&laser_sword_image)), 20, 100);
     const laser_sword_texture: ?rl.Texture2D = rl.LoadTextureFromImage(laser_sword_image);
     rl.UnloadImage(laser_sword_image);
@@ -43,7 +43,7 @@ pub fn main() !void {
     //
     // Lightning ball
     //
-    var lightning_ball_image: rl.Image = rl.LoadImage("resources/lightning_ball.png");
+    var lightning_ball_image: rl.Image = rl.LoadImage("resources/textures/lightning_ball.png");
     rl.ImageResize(@as([*c]rl.Image, @ptrCast(&lightning_ball_image)), 100, 100);
     const lightning_ball_texture: ?rl.Texture2D = rl.LoadTextureFromImage(lightning_ball_image);
     rl.UnloadImage(lightning_ball_image);
