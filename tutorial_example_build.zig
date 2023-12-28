@@ -59,4 +59,13 @@ pub fn build(
         "how-to-play-audio",
         "src/tutorial_examples/how-to-play-audio.zig",
     );
+
+    create_tutorial_example_binary_and_test_step(
+        b,
+        target,
+        optimize,
+        box2c_lib,
+        "how-to-deal-with-fonts",
+        "src/tutorial_examples/how-to-deal-with-fonts.zig",
+    );
 }

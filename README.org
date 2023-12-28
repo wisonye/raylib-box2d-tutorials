@@ -108,7 +108,7 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 
 ** [[file:tutorials/e-how-to-play-audio.org][How to play audio]]
 
-** Working with fonts
+** How to deal with fonts
 
 ** Working with Camera
 

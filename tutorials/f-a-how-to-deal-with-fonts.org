@@ -1,0 +1,51 @@
+* How to deal with fonts
+
+** Regular steps to load and draw image (as texture)
+
+Here are the steps if you want to use your custom font:
+
+- Call ~LoadFont/LoadFontEx~ to load font from file
+
+- Optional to call ~GetFontDefault~ if want use default font instead of the custom font
+
+- Optional to call ~MeasureTextEx~ to get the text size
+
+- Finally, call ~UnloadFont~ before program closes
+
+
+** Example
+
+[[file:~/zig/raylib-box2d-tutorials/src/tutorial_examples/how-to-deal-with-fonts.zig][src/tutorial_examples/how-to-deal-with-fonts.zig]]
+
+  
+** Related APIs
+
+#+BEGIN_SRC c
+  // Get the default Font
+  Font GetFontDefault(void);
+  // Load font from file into GPU memory (VRAM)
+  Font LoadFont(const char *fileName);
+  // Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character set
+  Font LoadFontEx(const char *fileName, int fontSize, int *codepoints, int codepointCount);
+  // Load font from Image (XNA style)
+  Font LoadFontFromImage(Image image, Color key, int firstChar);
+  // Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
+  Font LoadFontFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, int fontSize, int *codepoints, int codepointCount);
+
+  // Check if a font is ready
+  bool IsFontReady(Font font);
+
+  // Load font data for further use
+  GlyphInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *codepoints, int codepointCount, int type);
+
+  // Generate image font atlas using chars info
+  Image GenImageFontAtlas(const GlyphInfo *glyphs, Rectangle **glyphRecs, int glyphCount, int fontSize, int padding, int packMethod);
+
+  // Unload font chars info data (RAM)
+  void UnloadFontData(GlyphInfo *glyphs, int glyphCount);
+  // Unload font from GPU memory (VRAM)
+  void UnloadFont(Font font);
+
+  // Export font as code file, returns true on success
+  bool ExportFontAsCode(Font font, const char *fileName);
+#+END_SRC
