@@ -1,10 +1,6 @@
-const b = @cImport({
-    @cInclude("box2d/box2d.h");
-    @cInclude("box2d/geometry.h");
-    @cInclude("box2d/math.h");
-    @cInclude("stdio.h");
-});
-
+//!
+//! Encapsulate `rl.Camera2D` and add useful functionalities
+//!
 const rl = @cImport({
     @cInclude("raylib.h");
 });
@@ -16,32 +12,39 @@ const Camera2D = @This();
 
 width: usize,
 height: usize,
+pixel_to_world_unit_scale_factor: f32,
 _internal_camera: rl.Camera2D,
 
 ///
 ///
+/// pixel_to_world_unit_scale_factor -  how many world units are represented by 1 screen pixel
 ///
-pub fn init(width: usize, height: usize) Camera2D {
+pub fn init(
+    screen_width: usize,
+    screen_height: usize,
+    pixel_to_world_unit_scale_factor: f32,
+) Camera2D {
     return Camera2D{
-        .width = width,
-        .height = height,
+        .width = screen_width,
+        .height = screen_height,
+        .pixel_to_world_unit_scale_factor = pixel_to_world_unit_scale_factor,
         ._internal_camera = .{
             //
-            // Box2D world's origin is at the centre (0,0), let's make the camera origin
-            // to the centre of screen window, it's good for mapping world's coordinate
-            // to screen coordinate.
+            // Set the camera origin to the centre of the screen window, that camera origin point
+            // represents the world's origin (0,0).
             //
             .offset = rl.Vector2{
-                .x = @as(f32, @floatFromInt(width)) / 2.0,
-                .y = @as(f32, @floatFromInt(height)) / 2.0,
+                .x = @as(f32, @floatFromInt(screen_width)) / 2.0,
+                .y = @as(f32, @floatFromInt(screen_height)) / 2.0,
             },
             //
-            // Box2D world's origin (0,0)
+            // `target` means the world's coordinate to show in the screen, set it to world's
+            // origin (0,0) as init value. This target is always shown in the centre of the
+            // camera (the centre of the screen window).
             //
             .target = rl.Vector2{ .x = 0, .y = 0 },
             .rotation = 0.0,
             .zoom = 1.0,
-            // .zoom = 0.3,
         },
     };
 }
@@ -49,27 +52,55 @@ pub fn init(width: usize, height: usize) Camera2D {
 ///
 ///
 ///
-pub fn convert_screen_to_world(self: *const Camera2D, screen_position: rl.Vector2) b.b2Vec2 {
-    const world_pos = rl.GetScreenToWorld2D(screen_position, self._internal_camera);
+pub fn screen_to_world_pos(self: *const Camera2D, screen_position: rl.Vector2) rl.Vector2 {
+    var world_pos = rl.GetScreenToWorld2D(screen_position, self._internal_camera);
 
-    return .{ .x = world_pos.x, .y = world_pos.y };
+    world_pos.x = world_pos.x * self.pixel_to_world_unit_scale_factor;
+
+    // Y axis is always flipped
+    world_pos.y = world_pos.y * self.pixel_to_world_unit_scale_factor * -1.0;
+
+    return world_pos;
 }
 
 ///
+/// World coordinate to screen camera coordinate (camera's `offset/origin` on screen)
 ///
-///
-pub fn convert_world_to_screen(self: *const Camera2D, world_position: b.b2Vec2) rl.Vector2 {
-    const temp_pos = rl.Vector2{ .x = world_position.x, .y = world_position.y };
-    const screen_pos = rl.GetWorldToScreen2D(temp_pos, self._internal_camera);
+pub fn world_to_screen_pos(self: *const Camera2D, world_position: rl.Vector2) rl.Vector2 {
+    //
+    // Because we've already set the camera origin to the centre of the screen window, that
+    // camera origin point represents the world's origin (0,0) and it has the same positive
+    // direction like below:
+    //
+    //            |
+    //            |
+    //            |
+    //            |
+    //  ----------+----------> +
+    //            |(0,0)
+    //            |
+    //            |
+    //            |
+    //            |
+    //            v
+    //
+    //            +
+    //
+    // That means the camera has the same coordinate with the world!!!
+    //
+    return .{
+        .x = world_position.x / self.pixel_to_world_unit_scale_factor,
 
-    return .{ .x = screen_pos.x, .y = screen_pos.y };
+        // Y axis is always flipped
+        .y = (world_position.y / self.pixel_to_world_unit_scale_factor) * -1.0,
+    };
 }
 
 ///
 ///
 ///
 pub fn set_zoom(self: *Camera2D, new_zoom: f32) void {
-    const MIN_ZOOM = 0.3;
+    const MIN_ZOOM = 0.1;
     const MAX_ZOOM = 4.0;
 
     if (new_zoom > MAX_ZOOM) {

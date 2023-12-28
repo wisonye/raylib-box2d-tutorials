@@ -14,7 +14,7 @@ pub const GameError = error{
 pub const GAME_FPS = 60;
 
 //
-// 1 screen pixel represents how many meters in the Box2D world
+// how many world units are represented by 1 screen pixel
 //
 pub const PIXEL_TO_WORLD_SCALE_FACTOR = 0.1;
 
