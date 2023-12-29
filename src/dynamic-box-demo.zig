@@ -63,7 +63,7 @@ pub fn main() !void {
         if (deinit_status == .leak) std.testing.expect(false) catch @panic("\nGPA detected a memory leak!!!\n");
     }
 
-    var dynamic_box_list = try std.ArrayList(DynamicBox).initCapacity(allocator, 100);
+    var dynamic_box_list = try std.ArrayList(DynamicBox).initCapacity(allocator, 200);
 
     // Create 10 dynamic boxes: 1x1 meter box at init position 40 meters height
     for (1..11) |index| {
@@ -121,22 +121,17 @@ pub fn main() !void {
         }
 
         //
-        // Press `D` to generate new dynamic body
+        // Press down mouse left button to generate new dynamic body
         //
-        if (rl.IsKeyPressed(rl.KEY_D)) {
+        if (rl.IsMouseButtonDown(rl.MOUSE_BUTTON_LEFT)) {
             const mouse_pos = rl.GetMousePosition();
-            rl.TraceLog(
-                rl.LOG_INFO,
-                ">>> Mouse clicked at : (%.2f, %.2f)",
-                mouse_pos.x,
-                mouse_pos.y,
-            );
-
             const screen_to_world_pos = camera.screen_to_world_pos(mouse_pos);
 
             rl.TraceLog(
                 rl.LOG_DEBUG,
-                ">>> [ main loop ] - screen_to_world_pos: { %.2f, %.2f}",
+                ">>> [ main loop ] - mouse pos: (%.2f, %.2f), screen_to_world_pos: { %.2f, %.2f}",
+                mouse_pos.x,
+                mouse_pos.y,
                 screen_to_world_pos.x,
                 screen_to_world_pos.y,
             );
@@ -187,7 +182,7 @@ pub fn main() !void {
         );
         rl.DrawTextEx(
             my_font,
-            "- 'D' to drop a dynamic box at the mouse position",
+            "- Hold donw mouse left button to drop a dynamic box",
             .{ .x = 30.0, .y = 80.0 },
             font_size,
             2.0,
@@ -195,7 +190,7 @@ pub fn main() !void {
         );
         rl.DrawTextEx(
             my_font,
-            "- Mouse wheel to scale camera view",
+            "- Mouse wheel to zoom in/out",
             .{ .x = 30.0, .y = 110.0 },
             font_size,
             2.0,
