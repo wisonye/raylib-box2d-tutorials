@@ -1,3 +1,4 @@
+const std = @import("std");
 const rl = @cImport({
     @cInclude("raylib.h");
     @cInclude("raymath.h");
@@ -39,14 +40,16 @@ pub fn main() !void {
     // Setup camera
     //
     const default_camera_zoom = 1.0;
+    const half_screen_width: f32 = @as(f32, @floatFromInt(screen_width)) / 2.0;
+    const half_screen_height: f32 = @as(f32, @floatFromInt(screen_height)) / 2.0;
     var camera = rl.Camera2D{
         //
         // Camera/window origin in screen coordinate, set to center of the screen,
         // used for zooming and rotating
         //
         .offset = .{
-            .x = @as(f32, @floatFromInt(screen_width)) / 2.0,
-            .y = @as(f32, @floatFromInt(screen_height)) / 2.0,
+            .x = half_screen_width,
+            .y = half_screen_height,
         },
         // .offset = .{ .x = 0.0, .y = 0.0 },
         .rotation = 0.0,
@@ -75,7 +78,19 @@ pub fn main() !void {
         }
 
         //
-        // Translate based on mouse right click
+        // Press 'R' to reset camera origin to world's origin
+        //
+        if (rl.IsKeyPressed(rl.KEY_R)) {
+            camera.offset = .{
+                .x = half_screen_width,
+                .y = half_screen_height,
+            };
+            camera.target = .{ .x = 0.0, .y = 0.0 };
+            camera.zoom = default_camera_zoom;
+        }
+
+        //
+        // Move camera target (world's coordinate) by mouse movement delta
         //
         if (rl.IsMouseButtonDown(rl.MOUSE_BUTTON_LEFT)) {
             var delta = rl.GetMouseDelta();
@@ -115,6 +130,22 @@ pub fn main() !void {
 
         rl.ClearBackground(TRON_DARK);
 
+        //
+        // - Draw function use `camera.origin` as `(0,0)` inside `BeginMode2D` and
+        //   `EndMode2D` block.
+        //
+        // - Usually, `camera.origin` as `(0,0)` maps to world's origin `(0,0)` and
+        //   `camera.origin` move to screen window's centerbut `y-axis` is flipped
+        //   with the world's coordinate.
+        //
+        // - Also, because `camera.origin` is set to the centre of the screen window,
+        //   that means `(0,0)` is drawn to the centre of the screen window inside
+        //  `BeginMode2D` and `EndMode2D` block, not drawing to the left-top anymore
+        //
+        // That's why you can think you're using the world's coordinates inside
+        // `BeginMode2D` and `EndMode2D` block but must apply the `pixel to world unit
+        // scale factor` to keep the world object ratio on the screen.
+        //
         rl.BeginMode2D(camera);
 
         //
@@ -126,8 +157,8 @@ pub fn main() !void {
             TRON_LIGHT_BLUE,
         );
         rl.DrawLineV(
-            .{ .x = 0.0, .y = 1000.0 },
-            .{ .x = 0.0, .y = -1000.0 },
+            .{ .x = 0.0, .y = 1000.0 * -1.0 }, // y-axis is flipped
+            .{ .x = 0.0, .y = -1000.0 * -1.0 }, // y-axis is flipped
             TRON_LIGHT_BLUE,
         );
 
@@ -144,15 +175,15 @@ pub fn main() !void {
             TRON_BLUE,
         );
         rl.DrawPoly(
-            .{ .x = 0.0, .y = 200.0 },
+            .{ .x = 0.0, .y = 200.0 * -1.0 },
             poly_shape_sides,
             poly_shape_radius,
-            90.0,
+            270.0,
             TRON_BLUE,
         );
 
-        rl.DrawText("+", 205, 5, 20, TRON_BLUE);
-        rl.DrawText("+", 5, 205, 20, TRON_BLUE);
+        rl.DrawText("+", 213, 25 * -1.0, 20, TRON_BLUE);
+        rl.DrawText("+", 13, 220 * -1.0, 20, TRON_BLUE);
 
         //
         // Draw world origin point to show the world's origin (0,0)
@@ -162,7 +193,7 @@ pub fn main() !void {
         //
         // Draw wrold origin coordinate (0,0)
         //
-        const world_pos = .{ .x = 40.0, .y = 40.0 };
+        const world_pos = .{ .x = 40.0, .y = 60.0 * -1.0 };
         rl.DrawText(
             "World's origin (0,0)",
             @as(c_int, @intFromFloat(world_pos.x)),
@@ -171,8 +202,8 @@ pub fn main() !void {
             TRON_ORANGE,
         );
         rl.DrawLineV(
-            .{ .x = 3.0, .y = 3.0 },
-            .{ .x = 35.0, .y = 35.0 },
+            .{ .x = 3.0, .y = 3.0 * -1.0 },
+            .{ .x = 35.0, .y = 35.0 * -1.0 },
             TRON_YELLOW,
         );
 
@@ -192,6 +223,35 @@ pub fn main() !void {
             35,
             20,
             TRON_BLUE,
+        );
+
+        rl.DrawText(
+            "'R' to reset camera",
+            10,
+            60,
+            20,
+            TRON_BLUE,
+        );
+
+        var camera_info_buffer = [_]u8{0x00} ** 256;
+        const camera_info = std.fmt.bufPrint(
+            &camera_info_buffer,
+            "[ Camera info ]\n\n> origin: ({d:.2}, {d:.2}) - centre of window: {s}\n\n> target: ({d:.2}, {d:.2})\n\n> zoom: {d:.2}",
+            .{
+                camera.offset.x,
+                camera.offset.y,
+                if (camera.offset.x == half_screen_width and camera.offset.y == half_screen_height) "Yes" else "No",
+                camera.target.x,
+                camera.target.y,
+                camera.zoom,
+            },
+        ) catch "";
+        rl.DrawText(
+            @as([*c]const u8, @ptrCast(camera_info)),
+            10,
+            90,
+            20,
+            TRON_YELLOW,
         );
 
         rl.EndDrawing();
