@@ -1,6 +1,5 @@
 const b = @cImport({
     @cInclude("box2d/box2d.h");
-    @cInclude("stdio.h");
 });
 
 const rl = @cImport({
@@ -63,7 +62,7 @@ pub fn main() !void {
         if (deinit_status == .leak) std.testing.expect(false) catch @panic("\nGPA detected a memory leak!!!\n");
     }
 
-    var dynamic_box_list = try std.ArrayList(DynamicBox).initCapacity(allocator, 200);
+    var dynamic_box_list = try std.ArrayList(DynamicBox).initCapacity(allocator, 500);
 
     // Create 10 dynamic boxes: 1x1 meter box at init position 40 meters height
     for (1..11) |index| {
@@ -89,7 +88,9 @@ pub fn main() !void {
     var is_running = true;
 
     while (is_running) {
-        // rl.TraceLog(rl.LOG_INFO, ">>> Redraw .....");
+        // ---------------------------------------------------------------
+        // Game logic
+        // ---------------------------------------------------------------
 
         //
         // Press `Q` to exit
@@ -97,6 +98,13 @@ pub fn main() !void {
         if (rl.IsKeyPressed(rl.KEY_Q)) {
             is_running = false;
             rl.TraceLog(rl.LOG_INFO, ">>> Press 'Q' to exit");
+        }
+
+        //
+        // Press 'R' to reset camera origin to world's origin
+        //
+        if (rl.IsKeyPressed(rl.KEY_R)) {
+            camera.reset_origin_to_world_origin(true);
         }
 
         //
@@ -112,12 +120,18 @@ pub fn main() !void {
         }
 
         //
-        // If wheel move change, then update the camera zoom settings
+        // Move camera target (world's coordinate) by mouse movement delta
         //
-        const current_wheel_move_y = rl.GetMouseWheelMoveV().y;
-        if (current_wheel_move_y != 0.0) {
-            const current_zoom = camera.get_zoom();
-            camera.set_zoom(current_zoom + current_wheel_move_y * 0.05);
+        if (rl.IsMouseButtonDown(rl.MOUSE_BUTTON_RIGHT)) {
+            camera.move_target_by_mouse_delta_position(rl.GetMouseDelta());
+        }
+
+        //
+        // Zoom in/out at current mouse position
+        //
+        const mouse_wheel_movement = rl.GetMouseWheelMove();
+        if (mouse_wheel_movement != 0.0) {
+            camera.zoom_at_mouse_position(mouse_wheel_movement);
         }
 
         //
@@ -154,24 +168,32 @@ pub fn main() !void {
 
         try world.run_simulation_step();
 
-        //
-        // Redraw everything
-        //
+        // ---------------------------------------------------------------
+        // Redraw frame
+        // ---------------------------------------------------------------
         rl.BeginDrawing();
         rl.ClearBackground(Game.Color.TRON_DARK);
 
+        //
+        // 2D Camera mode
+        //
         rl.BeginMode2D(camera._internal_camera);
 
+        // Draw ground box
         world.redraw_ground_box();
 
+        // Draw all dynamic boxes
         for (dynamic_box_list.items) |box| {
             box.redraw();
         }
 
         rl.EndMode2D();
 
+        //
+        // Draw left-top tips
+        //
         const title_font_size = @as(f32, @floatFromInt(my_font.baseSize)) * 1.3;
-        const font_size = @as(f32, @floatFromInt(my_font.baseSize)) * 0.9;
+        const font_size = @as(f32, @floatFromInt(my_font.baseSize)) * 0.8;
         rl.DrawTextEx(
             my_font,
             "Raylib Box2D Demo",
@@ -180,21 +202,56 @@ pub fn main() !void {
             2.0,
             Game.Color.TRON_BLUE,
         );
+
         rl.DrawTextEx(
             my_font,
-            "- Hold donw mouse left button to drop a dynamic box",
+            "- Hold down mouse left button to emit dynamic boxes",
             .{ .x = 30.0, .y = 80.0 },
             font_size,
             2.0,
-            Game.Color.TRON_LIGHT_BLUE,
+            Game.Color.TRON_BLUE,
         );
+
+        rl.DrawTextEx(
+            my_font,
+            "- Hold down mouse right button and drag to move camera",
+            .{ .x = 30.0, .y = 100.0 },
+            font_size,
+            2.0,
+            Game.Color.TRON_BLUE,
+        );
+
         rl.DrawTextEx(
             my_font,
             "- Mouse wheel to zoom in/out",
-            .{ .x = 30.0, .y = 110.0 },
+            .{ .x = 30.0, .y = 120.0 },
             font_size,
             2.0,
-            Game.Color.TRON_LIGHT_BLUE,
+            Game.Color.TRON_BLUE,
+        );
+
+        rl.DrawTextEx(
+            my_font,
+            "- 'R' to reset camera",
+            .{ .x = 30.0, .y = 140.0 },
+            font_size,
+            2.0,
+            Game.Color.TRON_BLUE,
+        );
+
+        var msg_buffer = [_]u8{0x00} ** 256;
+        const msg = std.fmt.bufPrint(
+            &msg_buffer,
+            "- Dynamic boxes count: {d}",
+            .{dynamic_box_list.items.len},
+        ) catch "";
+        rl.DrawTextEx(
+            my_font,
+            @as([*c]const u8, @ptrCast(msg)),
+            .{ .x = 30.0, .y = 160.0 },
+            font_size,
+            2.0,
+            Game.Color.TRON_YELLOW,
         );
 
         rl.EndDrawing();
