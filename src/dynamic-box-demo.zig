@@ -26,7 +26,7 @@ pub fn main() !void {
     //
     // Load custom font
     //
-    const my_font = rl.LoadFont("resources/SauceCodeProNerdFont-Medium.ttf");
+    const my_font = rl.LoadFont("resources/fonts/SauceCodeProNerdFont-Medium.ttf");
     defer rl.UnloadFont(my_font);
 
     //
@@ -42,11 +42,18 @@ pub fn main() !void {
     // Create Box2D world and static ground box
     //
     var world = World.init();
-    try world.create_static_ground_box(.{ .x = 0.0, .y = 0.0 }, 50.0, 2.0);
+    try world.create_static_ground_box(
+        .{ .x = 0.0, .y = 0.0 },
+        50.0,
+        1.0,
+        null,
+        null,
+        null,
+    );
     defer world.deinit();
 
     //
-    // Create bunch of dynamic box
+    // Create bunch of dynamic boxes
     //
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -57,12 +64,23 @@ pub fn main() !void {
     }
 
     var dynamic_box_list = try std.ArrayList(DynamicBox).initCapacity(allocator, 100);
-    try dynamic_box_list.appendSlice(&[_]DynamicBox{
-        try DynamicBox.init(&world, &camera, .{ .x = 0.0, .y = 10.0 }, 1.0, 1.0, null, null, null),
-        try DynamicBox.init(&world, &camera, .{ .x = 2.0, .y = 20.0 }, 1.0, 1.0, null, null, null),
-        try DynamicBox.init(&world, &camera, .{ .x = 3.0, .y = 30.0 }, 1.0, 1.0, null, null, null),
-        try DynamicBox.init(&world, &camera, .{ .x = 4.0, .y = 40.0 }, 1.0, 1.0, null, null, null),
-    });
+
+    // Create 10 dynamic boxes: 1x1 meter box at init position 40 meters height
+    for (1..11) |index| {
+        try dynamic_box_list.append(try DynamicBox.init(
+            &world,
+            &camera,
+            .{ .x = 0.0, .y = @floatFromInt(index * 10) },
+            1.0,
+            1.0,
+            null,
+            null,
+            null,
+            null,
+            null,
+        ));
+    }
+
     defer dynamic_box_list.deinit();
 
     //
@@ -134,6 +152,8 @@ pub fn main() !void {
                 null,
                 null,
                 null,
+                Game.Color.TRON_RED,
+                Game.Color.TRON_DARK,
             ));
         }
 

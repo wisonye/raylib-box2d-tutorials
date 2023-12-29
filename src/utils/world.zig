@@ -18,6 +18,9 @@ world_id: ?b.b2WorldId,
 ground_body_id: ?b.b2BodyId,
 ground_body_width: f32,
 ground_body_height: f32,
+ground_box_color: rl.Color,
+ground_box_center_line_color: rl.Color,
+ground_box_center_circle_color: rl.Color,
 
 ///
 /// Create Box2D world
@@ -35,6 +38,9 @@ pub fn init() World {
         .ground_body_id = null,
         .ground_body_width = 0.0,
         .ground_body_height = 0.0,
+        .ground_box_color = Game.Color.TRON_ORANGE,
+        .ground_box_center_line_color = Game.Color.TRON_DARK,
+        .ground_box_center_circle_color = Game.Color.TRON_DARK,
     };
 }
 
@@ -49,6 +55,9 @@ pub fn create_static_ground_box(
     init_position: b.b2Vec2,
     width: f32,
     height: f32,
+    ground_box_color: ?rl.Color,
+    ground_box_center_line_color: ?rl.Color,
+    ground_box_center_circle_color: ?rl.Color,
 ) Game.GameError!void {
     if (self.world_id == null) {
         return Game.GameError.WorldNotExists;
@@ -69,6 +78,18 @@ pub fn create_static_ground_box(
 
     var ground_shape_def = b.b2DefaultShapeDef();
     _ = b.b2Body_CreatePolygon(self.ground_body_id.?, &ground_shape_def, &ground_box);
+
+    if (ground_box_color) |v| {
+        self.ground_box_color = v;
+    }
+
+    if (ground_box_center_line_color) |v| {
+        self.ground_box_center_line_color = v;
+    }
+
+    if (ground_box_center_circle_color) |v| {
+        self.ground_box_center_circle_color = v;
+    }
 
     rl.TraceLog(
         rl.LOG_INFO,
@@ -168,7 +189,7 @@ pub fn redraw_ground_box(self: *const World) void {
         rect,
         .{ .x = 0.0, .y = 0.0 },
         angle,
-        Game.Color.TRON_ORANGE,
+        self.ground_box_color,
     );
 
     // Draw center line
@@ -177,10 +198,14 @@ pub fn redraw_ground_box(self: *const World) void {
         @intFromFloat(screen_pos.y),
         @intFromFloat(screen_pos.x + (width / 2)),
         @intFromFloat(screen_pos.y),
-        Game.Color.TRON_DARK,
+        self.ground_box_center_line_color,
     );
 
     // Draw center point: the world's origin (0,0)
     // rl.DrawCircleV(.{ .x = screen_pos.x, .y = screen_pos.y }, 4.0, Game.Color.TRON_RED);
-    rl.DrawCircleV(.{ .x = 0.0, .y = 0.0 }, 2.0, Game.Color.TRON_DARK);
+    rl.DrawCircleV(
+        .{ .x = 0.0, .y = 0.0 },
+        2.0,
+        self.ground_box_center_circle_color,
+    );
 }

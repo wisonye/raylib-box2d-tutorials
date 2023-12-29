@@ -22,6 +22,8 @@ pub const default_restitution: f32 = 0.7;
 //
 body_width: f32,
 body_height: f32,
+color: rl.Color,
+center_circle_color: rl.Color,
 
 camera: *const Camera2D,
 
@@ -45,6 +47,8 @@ pub fn init(
     density: ?f32,
     friction: ?f32,
     restitution: ?f32,
+    color: ?rl.Color,
+    center_circle_color: ?rl.Color,
 ) Game.GameError!DynamicBox {
     if (world.*.world_id == null) {
         return Game.GameError.WorldNotExists;
@@ -120,6 +124,8 @@ pub fn init(
         .body_width = body_width,
         .body_height = body_height,
         .camera = camera,
+        .color = color orelse Game.Color.TRON_LIGHT_BLUE,
+        .center_circle_color = center_circle_color orelse Game.Color.TRON_DARK,
     };
 }
 
@@ -152,6 +158,9 @@ pub fn redraw(self: *const DynamicBox) void {
     //     height,
     // );
 
+    //
+    // Solid rectangle
+    //
     const rect = rl.Rectangle{
         //
         // origin to rotate (relative to the rectangle left-top point), if you want the
@@ -173,13 +182,15 @@ pub fn redraw(self: *const DynamicBox) void {
         //
         rl.Vector2{ .x = width / 2, .y = height / 2 },
         angle,
-        Game.Color.TRON_RED,
+        self.color,
     );
 
+    //
     // Draw center point: the world's origin (0,0)
+    //
     rl.DrawCircleV(
         .{ .x = screen_pos.x, .y = screen_pos.y },
         1.0,
-        Game.Color.TRON_DARK,
+        self.center_circle_color,
     );
 }
