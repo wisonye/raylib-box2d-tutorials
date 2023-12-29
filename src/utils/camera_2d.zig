@@ -8,6 +8,13 @@ const rl = @cImport({
 const std = @import("std");
 const print = std.debug.print;
 
+///
+/// `@cInclude("raylib.h");` cause compilation problem!!!
+/// That's why we declare those extern functions explicitly here.
+///
+extern fn Vector2Scale(v: rl.Vector2, scale: f32) callconv(.C) rl.Vector2;
+extern fn Vector2Add(v1: rl.Vector2, v2: rl.Vector2) callconv(.C) rl.Vector2;
+
 const Camera2D = @This();
 
 width: usize,
@@ -33,7 +40,7 @@ pub fn init(
             // Set the camera origin to the centre of the screen window, that camera origin point
             // represents the world's origin (0,0).
             //
-            .offset = rl.Vector2{
+            .offset = .{
                 .x = @as(f32, @floatFromInt(screen_width)) / 2.0,
                 .y = @as(f32, @floatFromInt(screen_height)) / 2.0,
             },
@@ -42,7 +49,7 @@ pub fn init(
             // origin (0,0) as init value. This target is always shown in the centre of the
             // camera (the centre of the screen window).
             //
-            .target = rl.Vector2{ .x = 0, .y = 0 },
+            .target = .{ .x = 0, .y = 0 },
             .rotation = 0.0,
             .zoom = 1.0,
         },
@@ -125,9 +132,92 @@ pub fn get_zoom(self: *const Camera2D) f32 {
     return self._internal_camera.zoom;
 }
 
+// ///
+// ///
+// ///
+// pub fn get_target(self: *const Camera2D) rl.Vector2 {
+//     return self._internal_camera.target;
+// }
+
+// ///
+// ///
+// ///
+// pub fn get_internal_camera(self: *Camera2D) *rl.Camera2D {
+//     return &self._internal_camera;
+// }
+
 ///
 ///
 ///
-pub fn update_camera_target(self: *Camera2D, target_pos: rl.Vector2) void {
-    self._internal_camera.target = target_pos;
+pub fn move_target_by_mouse_delta_position(self: *Camera2D, delta_pos: rl.Vector2) void {
+    var d_pos = delta_pos;
+    d_pos = Vector2Scale(d_pos, -1.0 / self._internal_camera.zoom);
+    self._internal_camera.target = Vector2Add(self._internal_camera.target, d_pos);
+}
+
+// ///
+// ///
+// ///
+// pub fn update_camera_target(self: *Camera2D, target_pos: rl.Vector2) void {
+//     self._internal_camera.target = target_pos;
+// }
+
+///
+///
+///
+pub fn zoom_at_mouse_position(self: *Camera2D, mouse_wheel_movement: f32) void {
+    if (mouse_wheel_movement == 0.0) return;
+
+    const mouse_pos = rl.GetMousePosition();
+    //
+    // Get the world point that is under the mouse
+    //
+    const camera_ptr = &self._internal_camera;
+    const mouse_world_pos = rl.GetScreenToWorld2D(mouse_pos, camera_ptr.*);
+
+    //
+    // Set the offset to where the mouse is
+    //
+    camera_ptr.*.offset = mouse_pos;
+
+    //
+    // Set the target to match, so that the camera maps the world space point
+    // under the cursor to the screen space point under the cursor at any zoom
+    //
+    camera_ptr.*.target = mouse_world_pos;
+
+    //
+    // Zoom increment
+    //
+    const zoomIncrement: f32 = 0.125;
+    camera_ptr.*.zoom += (mouse_wheel_movement * zoomIncrement);
+    if (camera_ptr.*.zoom < zoomIncrement) {
+        camera_ptr.*.zoom = zoomIncrement;
+    }
+}
+
+///
+///
+///
+pub fn reset_origin_to_world_origin(self: *Camera2D, reset_zoom: bool) void {
+    self._internal_camera.offset = .{
+        .x = @as(f32, @floatFromInt(self.width)) / 2.0,
+        .y = @as(f32, @floatFromInt(self.height)) / 2.0,
+    };
+
+    //
+    // `target` means the world's coordinate to show in the screen, set it to world's
+    // origin (0,0) as init value. This target is always shown in the centre of the
+    // camera (the centre of the screen window).
+    //
+    self._internal_camera.target = .{ .x = 0, .y = 0 };
+
+    if (reset_zoom) {
+        self._internal_camera.zoom = 1.0;
+    }
+
+    rl.TraceLog(
+        rl.LOG_DEBUG,
+        "[ Camera2D - reset_origin_to_world_origin ]",
+    );
 }
