@@ -111,11 +111,18 @@ pub fn main() !void {
         // If the window gets resized, we need to update the camera
         //
         if (rl.IsWindowResized()) {
+            const new_screen_width = rl.GetScreenWidth();
+            const new_screen_height = rl.GetScreenHeight();
             rl.TraceLog(
                 rl.LOG_DEBUG,
                 ">>> New width: %d, new height: %d",
-                rl.GetScreenWidth(),
-                rl.GetScreenHeight(),
+                new_screen_width,
+                new_screen_height,
+            );
+
+            camera.update_screen_size(
+                @as(usize, @intCast(new_screen_width)),
+                @as(usize, @intCast(new_screen_height)),
             );
         }
 
@@ -253,6 +260,25 @@ pub fn main() !void {
             2.0,
             Game.Color.TRON_YELLOW,
         );
+
+        // var fps_buffer = [_]u8{0x00} ** 128;
+        // const fps = std.fmt.bufPrint(
+        //     &fps_buffer,
+        //     "FPS: {d}",
+        //     .{rl.GetFPS()},
+        // ) catch "";
+        // rl.DrawTextEx(
+        //     my_font,
+        //     @as([*c]const u8, @ptrCast(fps)),
+        //     .{
+        //         .x = @as(f32, @floatFromInt(rl.GetScreenWidth())) - 140.0,
+        //         .y = 20.0,
+        //     },
+        //     font_size,
+        //     2.0,
+        //     Game.Color.TRON_LIGHT_BLUE,
+        // );
+        rl.DrawFPS(rl.GetScreenWidth() - 120, 20);
 
         rl.EndDrawing();
     }

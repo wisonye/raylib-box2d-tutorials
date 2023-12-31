@@ -199,6 +199,23 @@ pub fn zoom_at_mouse_position(self: *Camera2D, mouse_wheel_movement: f32) void {
 ///
 ///
 ///
+pub fn update_screen_size(
+    self: *Camera2D,
+    screen_width: usize,
+    screen_height: usize,
+) void {
+    self.width = screen_width;
+    self.height = screen_height;
+
+    self._internal_camera.offset = .{
+        .x = @as(f32, @floatFromInt(self.width)) / 2.0,
+        .y = @as(f32, @floatFromInt(self.height)) / 2.0,
+    };
+}
+
+///
+///
+///
 pub fn reset_origin_to_world_origin(self: *Camera2D, reset_zoom: bool) void {
     self._internal_camera.offset = .{
         .x = @as(f32, @floatFromInt(self.width)) / 2.0,
