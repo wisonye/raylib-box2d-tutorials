@@ -1,0 +1,237 @@
+* How to deal width =Camera2=
+
+** Quick intro video
+
+Please watch this video to learn the basic concept of  Camera2D and how it works: [[https://www.youtube.com/watch?v=zkjDU3zmk40&list=PLowVbpI_vWxQkLI6mv4eTZ-Rm-4EV0YbZ&index=4][Raylib Camera2D Overview]]
+
+
+** Summaries
+
+- When you don't have a camera, everything is based on the screen where =(0,0)= is the left-top corner.
+
+- When you add a camera, you now have two coordinate systems: The =world= and the =screen=.
+
+
+** Coordinates
+
+*** Without =Camera2D=
+
+Usually, your game UI (map/player/enemy, etc) will be designed in a large area called the =World Coordinate=, its origin =(0,0)= is the center of the map.
+
+But in =raylib=, it uses the =Screen Coordinate= that the origin =(0,0)= is the left-top corner.
+
+Here is the different coordinates example:
+
+ [ Wolrd coordinate ]                   [ Screen coordinate ]
+
+           ^ +                                    +---------------------> +
+           |                                      |(0,0)
+           |   A (2,3)                            | 
+           |                                      |  A (2,3)
+           |(0,0)                                 |
+ ----------+----------> +                         |
+           |                                      |
+           |                                      |
+           |                                      |     
+           |                                      |
+           |                                      v +
+
+That's why you have to transform between different coordinate systems before you can draw the world on screen correctly.
+
+
+*** With =Camera2D=
+
+But if you use =Camera2D=, the situBut if you use "Camera2D", the situation changes:
+
+#+BEGIN_SRC zig
+  var camera: rl.Camera2D = .{
+      //
+      // Set the camera origin to the centre of the screen window, that camera origin point
+      // represents the world's origin (0,0).
+      //
+      .offset = .{
+          .x = @as(f32, @floatFromInt(screen_width)) / 2.0,
+          .y = @as(f32, @floatFromInt(screen_height)) / 2.0,
+      },
+      //
+      // `target` means the world's coordinate to show in the screen, set it to world's
+      // origin (0,0) as init value. This target is always shown in the centre of the
+      // camera (the centre of the screen window).
+      //
+      .target = .{ .x = 0, .y = 0 },
+      .rotation = 0.0,
+      .zoom = 1.0,
+  },
+#+END_SRC
+
+
+If you set camera like above, then you've already set the camera origin to the centre of the screen window, and here are the changes:
+
+**** 1. The camera origin/offset point represents the world's origin =(0,0)=.
+
+
+**** 2. Both coordinates have the same positive =x-axis= but screen's =y-axis= is flipped with the world's coordinates:
+
+[ Wolrd coordinate ]              [ Camera screen coordinate ]
+
+        ^ +                                    | -
+        |                                      |
+        |   A (2,3)                            |
+        |                                      |
+        |(0,0)                                 |
+----------+----------> +               ----------+----------> +
+        |                                      |(0,0)
+        |                                      |
+        |                                      |     A (2,-3)
+        |                                      |
+        | -                                    v +
+
+
+#+BEGIN_SRC zig
+   rl.BeginDrawing(); -------------------------------------------------\
+                                                                       |
+   // (0,0) is left-top corner                                         |
+                                                                       |
+   rl.BeginMode2D(camera); =======================\                    |
+                                                  |                    |
+   // (0,0) is centre of the screen window        |                    |
+                                                  | World coordinate   |
+                                                  |                    | Screen coordinate
+                                                  |                    |
+   rl.EndMode2D(); ===============================/                    |
+                                                                       |
+                                                                       |
+   rl.EndDrawing();   -------------------------------------------------/
+#+END_SRC
+      
+When you draw things insdie the ~BeginMode2D~ and ~EndMode2D~ block, you're  using the =Camera screen coordinate= system, =(0,0)= is the centre of the screen window (NOT the left-top corner anymore)!!!
+
+That's why you can think you're using the world's coordinates inside ~BeginMode2D~ and ~EndMode2D~ block but must apply the =pixel to world unit scale factor= to keep the world object ratio on the screen.
+
+
+**** 3. Coordinate conversion
+
+You can use ~GetWorldToScreen2D/GetScreenToWorld2D~ to convert coordinate between world and screen:
+
+#+BEGIN_SRC zig
+  rl.BeginDrawing();
+  // ...
+  const world_pos = rl.GetScreenToWorld2D(screen_position, camera);
+
+  const mouse_pos = rl.GetMousePosition();
+  const mouse_world_pos = rl.GetScreenToWorld2D(mouse_pos, camera);
+  // ...
+
+  rl.BeginMode2D(camera);
+  //
+  // DO NOT use `GetWorldToScreen2D/GetScreenToWorld2D` here!!!
+  //
+  rl.EndMode2D();
+
+  rl.EndDrawing();
+#+END_SRC
+
+
+But keep that in mind, you CANNOT use those functions inside ~BeginMode2D~ and ~EndMode2D~ block!!!
+But keep that in mind, you CANNOT use those functions inside ~BeginMode2D~ and ~EndMode2D~ block!!!
+But keep that in mind, you CANNOT use those functions inside ~BeginMode2D~ and ~EndMode2D~ block!!!
+
+
+Here is the ~BeginMode2D~ and ~EndMode2D~ source code, just in case you want to know the details:
+
+#+BEGIN_SRC zig
+  // Initialize 2D mode with custom camera (2D)
+  void BeginMode2D(Camera2D camera)
+  {
+      rlDrawRenderBatchActive();      // Update and draw internal render batch
+
+      rlLoadIdentity();               // Reset current matrix (modelview)
+
+      // Apply 2d camera transformation to modelview
+      rlMultMatrixf(MatrixToFloat(GetCameraMatrix2D(camera)));
+
+      // Apply screen scaling if required
+      rlMultMatrixf(MatrixToFloat(CORE.Window.screenScale));
+  }
+
+  // Ends 2D mode with custom camera
+  void EndMode2D(void)
+  {
+      rlDrawRenderBatchActive();      // Update and draw internal render batch
+
+      rlLoadIdentity();               // Reset current matrix (modelview)
+      rlMultMatrixf(MatrixToFloat(CORE.Window.screenScale)); // Apply screen scaling if required
+  }
+#+END_SRC
+
+
+** Regular steps to use =Camera2D=
+
+Here are the steps you should follow:
+
+*** Create and init =Camera2D= instance like below:
+
+    #+BEGIN_SRC zig
+      var camera: rl.Camera2D = .{
+          //
+          // Set the camera origin to the centre of the screen window, that camera origin point
+          // represents the world's origin (0,0).
+          //
+          .offset = .{
+              .x = @as(f32, @floatFromInt(screen_width)) / 2.0,
+              .y = @as(f32, @floatFromInt(screen_height)) / 2.0,
+          },
+          //
+          // `target` means the world's coordinate to show in the screen, set it to world's
+          // origin (0,0) as init value. This target is always shown in the centre of the
+          // camera (the centre of the screen window).
+          //
+          .target = .{ .x = 0, .y = 0 },
+          .rotation = 0.0,
+          .zoom = 1.0,
+      },
+    #+END_SRC
+
+
+*** Put all camera related drawing call inside the ~BeginMode2D~ and ~EndMode2D~ block
+
+
+#+BEGIN_SRC zig
+   rl.BeginDrawing(); -------------------------------------------------\
+                                                                       |
+   // (0,0) is left-top corner                                         |
+                                                                       |
+   rl.BeginMode2D(camera); =======================\                    |
+                                                  |                    |
+   // (0,0) is centre of the screen window        |                    |
+                                                  | World coordinate   |
+                                                  |                    | Screen coordinate
+                                                  |                    |
+   rl.EndMode2D(); ===============================/                    |
+                                                                       |
+                                                                       |
+   rl.EndDrawing();   -------------------------------------------------/
+#+END_SRC
+
+
+*** Call ~GetWorldToScreen2D/GetScreenToWorld2D~ to convert coordinate between =World= and =Screen=
+
+Example:
+
+#+BEGIN_SRC zig
+  rl.BeginDrawing();
+  // ...
+  const world_pos = rl.GetScreenToWorld2D(screen_position, camera);
+
+  const mouse_pos = rl.GetMousePosition();
+  const mouse_world_pos = rl.GetScreenToWorld2D(mouse_pos, camera);
+  // ...
+
+  rl.BeginMode2D(camera);
+  //
+  // DO NOT use `GetWorldToScreen2D/GetScreenToWorld2D` here!!!
+  //
+  rl.EndMode2D();
+
+  rl.EndDrawing();
+#+END_SRC

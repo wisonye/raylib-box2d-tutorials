@@ -108,13 +108,9 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 
 ** [[file:tutorials/e-how-to-play-audio.org][How to play audio]]
 
-** How to deal with fonts
+** [[file:tutorials/f-a-how-to-deal-with-fonts.org][How to deal with fonts]]
 
-** Working with Camera
-
-*** Camera concepts and how it works
-
-*** Camera coordinate conversion
+** [[file:tutorials/g-a-how-camera-works.org][How to deal with Camera2D]]
 
 * =Box2D= tutorials
 
