@@ -19,7 +19,7 @@ pub fn main() !void {
     //
     // Raylib game init
     //
-    Game.init(1024, 768, "[ Raylib Box2D Demo ] - Dynamic box");
+    Game.init(2048, 1024, "[ Raylib Box2D Demo ] - Dynamic box");
     defer Game.deinit();
 
     //
@@ -72,6 +72,7 @@ pub fn main() !void {
             .{ .x = 0.0, .y = @floatFromInt(index * 10) },
             1.0,
             1.0,
+            null,
             null,
             null,
             null,
@@ -170,6 +171,40 @@ pub fn main() !void {
                 null,
                 Game.Color.TRON_RED,
                 Game.Color.TRON_DARK,
+                null,
+            ));
+        }
+
+        //
+        // Press 'S' to shoot a box at mouse position to world's origin
+        //
+        if (rl.IsKeyDown(rl.KEY_S)) {
+            const mouse_pos = rl.GetMousePosition();
+            const screen_to_world_pos = camera.screen_to_world_pos(mouse_pos);
+
+            rl.TraceLog(
+                rl.LOG_DEBUG,
+                ">>> [ main loop ] - shoot bullet,  mouse pos: (%.2f, %.2f), screen_to_world_pos: { %.2f, %.2f}",
+                mouse_pos.x,
+                mouse_pos.y,
+                screen_to_world_pos.x,
+                screen_to_world_pos.y,
+            );
+            try dynamic_box_list.append(try DynamicBox.init(
+                &world,
+                &camera,
+                .{
+                    .x = screen_to_world_pos.x,
+                    .y = screen_to_world_pos.y,
+                },
+                1.0,
+                1.0,
+                null,
+                null,
+                null,
+                Game.Color.TRON_ORANGE,
+                Game.Color.TRON_DARK,
+                .{ .x = 50.0, .y = -40.0 },
             ));
         }
 
@@ -246,6 +281,15 @@ pub fn main() !void {
             Game.Color.TRON_BLUE,
         );
 
+        rl.DrawTextEx(
+            my_font,
+            "- Hold down 'S' to shoot ynamic boxes",
+            .{ .x = 30.0, .y = 160.0 },
+            font_size,
+            2.0,
+            Game.Color.TRON_BLUE,
+        );
+
         var msg_buffer = [_]u8{0x00} ** 256;
         const msg = std.fmt.bufPrint(
             &msg_buffer,
@@ -255,7 +299,7 @@ pub fn main() !void {
         rl.DrawTextEx(
             my_font,
             @as([*c]const u8, @ptrCast(msg)),
-            .{ .x = 30.0, .y = 160.0 },
+            .{ .x = 30.0, .y = 180.0 },
             font_size,
             2.0,
             Game.Color.TRON_YELLOW,

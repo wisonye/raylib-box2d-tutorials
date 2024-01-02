@@ -49,6 +49,7 @@ pub fn init(
     restitution: ?f32,
     color: ?rl.Color,
     center_circle_color: ?rl.Color,
+    velocity: ?b.b2Vec2,
 ) Game.GameError!DynamicBox {
     if (world.*.world_id == null) {
         return Game.GameError.WorldNotExists;
@@ -64,6 +65,9 @@ pub fn init(
     var body_def = b.b2DefaultBodyDef();
     body_def.type = b.b2_dynamicBody;
     body_def.position = init_world_position;
+    if (velocity) |v| {
+        body_def.linearVelocity = v;
+    }
 
     //
     // 2. Create the `Body` by the given `BodyDef` (heap-allocated), `Body` has no geometry
