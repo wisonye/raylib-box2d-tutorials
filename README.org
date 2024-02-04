@@ -48,7 +48,16 @@ After that, ~zig build -Drelease=true~ works, that's what ~raylib_build.zig~ doe
 *** List all supported demo run steps
 
 #+BEGIN_SRC bash
- zig build --help | grep "run-" 
+  zig build --help | grep "run-" 
+
+  # run-dynamic-box                     Run the dynamic-box demo
+  # run-centre-with-player-position     Run the centre-with-player-position demo
+  # run-move-and-zoom-by-mouse          Run the move-and-zoom-by-mouse demo
+  # run-first-person-view               Run the first-person-view demo
+  # run-how-to-draw-images-and-textures Run the how-to-draw-images-and-textures demo
+  # run-how-to-play-audio               Run the how-to-play-audio demo
+  # run-how-to-deal-with-fonts          Run the how-to-deal-with-fonts demo
+  # run-temp-test                       Run the temp-test demo
 #+END_SRC
 
 
