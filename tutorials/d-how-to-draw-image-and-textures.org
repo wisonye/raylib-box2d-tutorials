@@ -21,7 +21,7 @@ Here are the steps you should follow:
 
 ** Example
 
-[[file:~/zig/raylib-box2d-tutorials/src/tutorial_examples/how-to-draw-images-and-textures.zig][src/tutorial_examples/how-to-draw-images-and-textures.zig]]
+[[file:../src/tutorial_examples/how-to-draw-images-and-textures.zig][src/tutorial_examples/how-to-draw-images-and-textures.zig]]
 
 
 ** What if you want to create a custom image or edit the existing image

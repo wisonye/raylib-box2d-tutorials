@@ -15,7 +15,7 @@ Here are the steps if you want to use your custom font:
 
 ** Example
 
-[[file:~/zig/raylib-box2d-tutorials/src/tutorial_examples/how-to-deal-with-fonts.zig][src/tutorial_examples/how-to-deal-with-fonts.zig]]
+[[file:../src/tutorial_examples/how-to-deal-with-fonts.zig][src/tutorial_examples/how-to-deal-with-fonts.zig]]
 
   
 ** Related APIs

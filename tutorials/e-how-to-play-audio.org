@@ -60,4 +60,4 @@ Here are the steps you should follow:
 
 ** Example
 
-[[file:~/zig/raylib-box2d-tutorials/src/tutorial_examples/how-to-play-audio.zig][src/tutorial_examples/how-to-play-audio.zig]]
+[[file:../src/tutorial_examples/how-to-play-audio.zig][src/tutorial_examples/how-to-play-audio.zig]]
