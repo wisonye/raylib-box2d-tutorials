@@ -6,7 +6,7 @@ const std = @import("std");
 pub fn build(
     b: *std.Build,
 ) *std.Build.Step {
-    const zig_build_cmd = b.addSystemCommand(&[_][]const u8{ "zig", "build" });
+    const zig_build_cmd = b.addSystemCommand(&[_][]const u8{ "zig", "build", "-Drelease=true" });
 
     // Change working directory
     zig_build_cmd.cwd = .{ .path = "./raylib" };

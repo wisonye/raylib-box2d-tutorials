@@ -5,9 +5,9 @@ const std = @import("std");
 ///
 pub fn create_tutorial_example_binary_and_test_step(
     b: *std.Build,
-    target: std.zig.CrossTarget,
+    target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    box2c_lib: *std.build.Step.Compile,
+    box2c_lib: *std.Build.Step.Compile,
     comptime binary_name: []const u8,
     comptime source_filename: []const u8,
 ) void {
@@ -38,9 +38,9 @@ pub fn create_tutorial_example_binary_and_test_step(
 ///
 pub fn build(
     b: *std.Build,
-    target: std.zig.CrossTarget,
+    target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    box2c_lib: *std.build.Step.Compile,
+    box2c_lib: *std.Build.Step.Compile,
 ) void {
     create_tutorial_example_binary_and_test_step(
         b,

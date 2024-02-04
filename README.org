@@ -31,6 +31,20 @@ This repo depends on =box2c= and =raylib= repos and has separate build step to c
 #+END_SRC
 
 
+*** Enable release build for =raylib=
+
+Open ~raylib/src/build.zig~ and add ~.preferred_optimize_mode~ support like below: 
+ 
+#+BEGIN_SRC zig
+  const optimize = b.standardOptimizeOption(.{
+      // .preferred_optimize_mode = .ReleaseFast,
+      .preferred_optimize_mode = .ReleaseSmall,
+  });
+#+END_SRC
+
+After that, ~zig build -Drelease=true~ works, that's what ~raylib_build.zig~ does!!!
+
+
 *** List all supported demo run steps
 
 #+BEGIN_SRC bash

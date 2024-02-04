@@ -5,10 +5,10 @@ const std = @import("std");
 ///
 pub fn build(
     b: *std.Build,
-    target: std.zig.CrossTarget,
+    target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
     raylib_build_step: *std.Build.Step,
-) *std.build.Step.Compile {
+) *std.Build.Step.Compile {
     const box2c_lib = b.addStaticLibrary(.{
         .name = "box2c",
         .root_source_file = null,
