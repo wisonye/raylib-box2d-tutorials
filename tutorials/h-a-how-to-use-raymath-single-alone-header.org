@@ -1,0 +1,92 @@
+* How to use =raymath= as a stand-alone header
+
+If you want to use any =raymatch.h= related function (e.g. ~Vector3Normalize~), then you might try to do something like below:
+
+#+BEGIN_SRC zig
+  const rl = @cImport({
+      @cInclude("raylib.h");
+      @cInclude("raymath.h");
+  });
+#+END_SRC
+
+But it won't work, as it will cause duplicate struct definition!!!
+
+That's because =raylib.h= has the following macros to prevent duplicate struct definition:
+
+#+BEGIN_SRC c
+  // NOTE: We set some defines with some data types declared by raylib
+  // Other modules (raymath, rlgl) also require some of those types, so,
+  // to be able to use those other modules as standalone (not depending on raylib)
+  // this defines are very useful for internal check and avoid type (re)definitions
+  #define RL_COLOR_TYPE
+  #define RL_RECTANGLE_TYPE
+  #define RL_VECTOR2_TYPE
+  #define RL_VECTOR3_TYPE
+  #define RL_VECTOR4_TYPE
+  #define RL_QUATERNION_TYPE
+  #define RL_MATRIX_TYPE
+#+END_SRC
+
+And =raymath.h= designs to be able to use a stand alone header without =raylib.h= or work with =raylib.h=, that's why it has the following conditional complination restrictions:
+
+#+BEGIN_SRC c
+  #if !defined(RL_XXXXXXX)
+  // ... struct type definition here
+  #define RL_XXXXXXX
+  #endif
+#+END_SRC
+
+
+That said if you try include =raylib.h= and =raymath.h= together, =raymath.= doesn't re-define all those struct types!!!
+
+
+But the problem is that =zig translate-c= can't handle those ~RL_XXXXXX~ macro, there is no way to define them before ~@cInclude("raymath.h");~ be executed!!! That's the reason to cause duplicate struct definition.
+
+So, how to solve it???
+
+** 1. Use =clang= to expand =raymath.h= with those macros
+
+#+BEGIN_SRC bash
+  clang -E \
+      -D RL_COLOR_TYPE \
+      -D RL_RECTANGLE_TYPE \
+      -D RL_VECTOR2_TYPE \
+      -D RL_VECTOR3_TYPE \
+      -D RL_VECTOR4_TYPE \
+      -D RL_QUATERNION_TYPE
+      -D RL_MATRIX_TYPE \
+      raylib/zig-out/include/raymath.h > raylib/zig-out/include/raymath_2.h
+#+END_SRC
+
+
+After that, =raylib/zig-out/include/raymath_2.h= removes all struct definitions exists inside =raylib.h=:)
+
+
+** 2. Add extra include statement
+
+You have to add the following include statement at the begining of =raylib/zig-out/include/raymath_2.h=:
+
+#+BEGIN_SRC c
+  #include "raylib.h"
+#+END_SRC
+
+That's because all struct definitions don't exists in =raylib/zig-out/include/raymath_2.h=.
+
+
+** 3. Translate header file into zig
+
+#+BEGIN_SRC bash
+  zig translate-c raylib/zig-out/include/raymath_2.h > ../src/raymath_2.zig
+#+END_SRC
+
+So, that =raymatch_2.zig= includes everything in =raylib.h= and =raymath.h=. You should only import it like below without using ~@cImport~:
+
+#+BEGIN_SRC zig
+  const rl = @import("raymath.zig");
+
+  // rl.LoadFont (from `raylib.h`)
+  // ......
+  // rl.Vector3Normalize (from `raymath.h`)
+#+END_SRC
+
+That's it;)

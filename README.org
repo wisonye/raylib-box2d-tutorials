@@ -135,6 +135,7 @@ All demo run steps don't create binary files into ~zig-out/bin~ folder, if you w
 
 ** [[file:tutorials/g-a-how-camera-works.org][How to deal with Camera2D]]
 
+** [[file:tutorials/h-a-how-to-use-raymath-single-alone-header.org][How to use =raymath= as a stand-alone header]]
 
 * =Box2D= tutorials
 
